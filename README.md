@@ -76,9 +76,9 @@ Each layer has a single responsibility: `server.js` composes middleware, `api.js
 | `MemoryCache Utility` | 8 | TTL expiry, LRU eviction, CRUD operations, stats reporting |
 | `emissionFactorCache singleton` | 1 | Instance type and TTL configuration |
 
-Run the full suite:
+Run the full suite (Backend + Frontend tests):
 ```bash
-cd backend && npm test
+npm run test
 ```
 
 ### Accessibility — WCAG-Compliant Design
