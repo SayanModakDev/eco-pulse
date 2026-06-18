@@ -4,6 +4,14 @@ An intelligent, context-aware carbon footprint management system built specifica
 
 ---
 
+## 🌐 Live Deployment
+
+* **Frontend Application UI:** [https://eco-pulse-883291931823.us-central1.run.app](https://eco-pulse-883291931823.us-central1.run.app)
+* **Backend Agent API Engine:** [https://eco-pulse-backend-883291931823.us-central1.run.app](https://eco-pulse-backend-883291931823.us-central1.run.app)
+* **Public GitHub Repository:** [https://github.com/SayanModakDev/eco-pulse](https://github.com/SayanModakDev/eco-pulse)
+
+---
+
 ## 🚀 Core Architecture & Multi-Agent Logic
 
 The application splits computational responsibilities between an accessible, highly performant client-side UI and an intelligent, secure server-side orchestration layer. 
