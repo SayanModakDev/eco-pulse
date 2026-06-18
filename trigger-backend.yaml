@@ -1,0 +1,71 @@
+build:
+  images:
+  - $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+  options:
+    logging: CLOUD_LOGGING_ONLY
+    substitutionOption: ALLOW_LOOSE
+  steps:
+  - args:
+    - build
+    - --no-cache
+    - -t
+    - $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+    - .
+    - -f
+    - backend/Dockerfile
+    id: Build
+    name: gcr.io/cloud-builders/docker
+  - args:
+    - push
+    - $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+    id: Push
+    name: gcr.io/cloud-builders/docker
+  - args:
+    - run
+    - services
+    - update
+    - $_SERVICE_NAME
+    - --platform=managed
+    - --image=$_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+    - --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID
+    - --region=$_DEPLOY_REGION
+    - --quiet
+    entrypoint: gcloud
+    id: Deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+  substitutions:
+    _AR_HOSTNAME: us-central1-docker.pkg.dev
+    _AR_PROJECT_ID: eco-pulse-499818
+    _AR_REPOSITORY: cloud-run-source-deploy
+    _DEPLOY_REGION: us-central1
+    _PLATFORM: managed
+    _SERVICE_NAME: eco-pulse-backend
+    _TRIGGER_ID: 39c66a76-0f5c-4796-8b9b-8df9cf9b5c46
+  tags:
+  - gcp-cloud-build-deploy-cloud-run
+  - gcp-cloud-build-deploy-cloud-run-managed
+  - eco-pulse-backend
+createTime: '2026-06-18T22:16:20.528327339Z'
+description: Build and deploy to Cloud Run service eco-pulse-backend on push to "^main$"
+github:
+  name: eco-pulse
+  owner: SayanModakDev
+  push:
+    branch: ^main$
+id: 39c66a76-0f5c-4796-8b9b-8df9cf9b5c46
+includeBuildLogs: INCLUDE_BUILD_LOGS_WITH_STATUS
+name: rmgpgab-eco-pulse-backend-us-central1-SayanModakDev-eco-pulsbnz
+resourceName: projects/eco-pulse-499818/locations/global/triggers/39c66a76-0f5c-4796-8b9b-8df9cf9b5c46
+serviceAccount: projects/eco-pulse-499818/serviceAccounts/883291931823-compute@developer.gserviceaccount.com
+substitutions:
+  _AR_HOSTNAME: us-central1-docker.pkg.dev
+  _AR_PROJECT_ID: eco-pulse-499818
+  _AR_REPOSITORY: cloud-run-source-deploy
+  _DEPLOY_REGION: us-central1
+  _PLATFORM: managed
+  _SERVICE_NAME: eco-pulse-backend
+  _TRIGGER_ID: 39c66a76-0f5c-4796-8b9b-8df9cf9b5c46
+tags:
+- gcp-cloud-build-deploy-cloud-run
+- gcp-cloud-build-deploy-cloud-run-managed
+- eco-pulse-backend
