@@ -11,7 +11,9 @@
     "start-frontend": "npm run start --prefix frontend",
     "build-frontend": "npm run build --prefix frontend",
     "build": "npm run build-frontend",
-    "test": "npm test --prefix backend",
+    "test-backend": "npm test --prefix backend",
+    "test-frontend": "npm test --prefix frontend",
+    "test": "npm run test-backend && npm run test-frontend",
     "lint": "npm run lint --prefix frontend"
   }
 }
