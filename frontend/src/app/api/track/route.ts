@@ -25,8 +25,9 @@ export async function POST(request: Request) {
         } else {
           console.warn('Failed to fetch OIDC token from metadata server. Status:', tokenResponse.status);
         }
-      } catch (err: any) {
-        console.error('Failed to retrieve OIDC token from Metadata Server:', err.message);
+      } catch (err) {
+        const errMsg = err instanceof Error ? err.message : String(err);
+        console.error('Failed to retrieve OIDC token from Metadata Server:', errMsg);
       }
     }
 
@@ -46,10 +47,11 @@ export async function POST(request: Request) {
 
     const data = await response.json();
     return NextResponse.json(data);
-  } catch (error: any) {
+  } catch (error) {
     console.error('Proxy Error:', error);
+    const errMsg = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { success: false, message: 'Internal server error in proxy', error: error.message },
+      { success: false, message: 'Internal server error in proxy', error: errMsg },
       { status: 500 }
     );
   }
