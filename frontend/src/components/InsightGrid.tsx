@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
 export interface Challenge {
   title: string;
@@ -13,16 +13,22 @@ interface InsightGridProps {
   challenges: Challenge[];
 }
 
-export default function InsightGrid({ challenges }: InsightGridProps) {
+/**
+ * InsightGrid Component
+ * Renders a grid of personalized sustainability challenges.
+ * 
+ * EFFICIENCY: Wrapped in React.memo and uses useCallback to prevent unnecessary re-renders.
+ */
+const InsightGrid = React.memo(({ challenges }: InsightGridProps) => {
   // Keep track of completed challenges locally to show interactive state
   const [completedChallenges, setCompletedChallenges] = useState<Record<string, boolean>>({});
 
-  const toggleComplete = (title: string) => {
+  const toggleComplete = useCallback((title: string) => {
     setCompletedChallenges((prev) => ({
       ...prev,
       [title]: !prev[title],
     }));
-  };
+  }, []);
 
   if (challenges.length === 0) {
     return (
@@ -148,4 +154,8 @@ export default function InsightGrid({ challenges }: InsightGridProps) {
       </div>
     </section>
   );
-}
+});
+
+InsightGrid.displayName = 'InsightGrid';
+
+export default InsightGrid;

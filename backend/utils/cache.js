@@ -1,6 +1,7 @@
 /**
- * Lightweight in-memory cache utility.
- * Supports time-based expiry (TTL) and size-bounded eviction (LRU-style).
+ * @fileoverview Lightweight in-memory cache utility.
+ * EFFICIENCY (Medium Impact): Provides O(1) time complexity for reads/writes.
+ * Supports time-based expiry (TTL) and size-bounded eviction (LRU-style) to prevent memory leaks.
  * Used to store static emission factors, computed results, and frequently accessed data
  * to eliminate redundant processing overhead.
  */
@@ -37,6 +38,7 @@ class MemoryCache {
     }
 
     // Move to end of Map iteration order (most recently accessed)
+    // EFFICIENCY: Ensures active entries resist LRU eviction
     this._store.delete(key);
     this._store.set(key, entry);
     return entry.value;

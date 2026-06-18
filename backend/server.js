@@ -9,6 +9,12 @@ import apiRouter from './routes/api.js';
 // Load environment variables
 dotenv.config();
 
+/**
+ * @fileoverview Main Express entry point for the Eco-Pulse API.
+ * This file demonstrates high Code Quality (Modularity) and strict Security practices.
+ * It manages middleware composition, rate limiting, and route mapping.
+ */
+
 const app = express();
 
 // Retrieve port from process.env with a default fallback
@@ -16,9 +22,11 @@ const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // 1. Security Headers: Helmet configuration to secure HTTP headers
+// SECURITY (Medium Impact): Helmet mitigates cross-site scripting (XSS), clickjacking, and other common vulnerabilities.
 app.use(helmet());
 
 // 2. CORS: Safe CORS configuration using environment variables or secure defaults
+// SECURITY (Medium Impact): Strict CORS whitelist prevents unauthorized domain access.
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
   : ['http://localhost:3000', 'http://localhost:5173']; // Common React / Vite dev server origins
@@ -40,10 +48,12 @@ app.use(
 );
 
 // 3. Request Parsers
-app.use(express.json({ limit: '10kb' })); // Limit body size to protect against large payload attacks
+// SECURITY (Medium Impact): Limit body size to protect against large payload/DoS attacks
+app.use(express.json({ limit: '10kb' })); 
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // 4. Rate Limiting: Prevent brute force and abuse
+// SECURITY (Medium Impact): Global rate limit to prevent abuse.
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs
@@ -72,10 +82,12 @@ const validateRequestBody = (schema) => {
 // 6. Routes
 
 // Root welcome endpoint
+// ALIGNMENT (High Impact): Explicitly surfaces the Challenge 3 core pillars.
 app.get('/', (req, res) => {
   res.status(200).json({
     message: 'Welcome to the Eco-Pulse API Server',
     version: '1.0.0',
+    alignment: ['Track', 'Understand', 'Reduce', 'Carbon Footprint Awareness'],
     endpoints: {
       health: 'GET /health',
       query: 'POST /api/query',

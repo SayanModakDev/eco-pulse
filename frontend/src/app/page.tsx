@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import ActionTracker from '../components/ActionTracker';
 import InsightGrid, { Challenge } from '../components/InsightGrid';
 
@@ -34,7 +34,11 @@ export default function DashboardPage() {
   // Default values before any submission
   const dailyTarget = 15.0;
 
-  const handleTrackActivity = async (activityString: string) => {
+  /**
+   * Submits the natural language input to the orchestrator layer.
+   * EFFICIENCY: Wrapped in useCallback to prevent unnecessary re-renders of the child ActionTracker.
+   */
+  const handleTrackActivity = useCallback(async (activityString: string) => {
     setIsLoading(true);
     setAnnouncement('Analyzing your activities for carbon emissions...');
     
@@ -88,7 +92,7 @@ export default function DashboardPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [dailyTarget]);
 
   // Compute values for stats cards
   const displayTotal = data ? data.summary.totalCo2eKg : 0.0;

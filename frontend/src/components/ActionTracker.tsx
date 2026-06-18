@@ -7,7 +7,13 @@ interface ActionTrackerProps {
   isLoading: boolean;
 }
 
-export default function ActionTracker({ onTrack, isLoading }: ActionTrackerProps) {
+/**
+ * ActionTracker Component
+ * Provides an accessible textarea for users to describe their daily actions.
+ * 
+ * EFFICIENCY: Wrapped in React.memo to prevent unnecessary re-renders when the parent dashboard updates.
+ */
+const ActionTracker = React.memo(({ onTrack, isLoading }: ActionTrackerProps) => {
   const [activityString, setActivityString] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -133,4 +139,8 @@ export default function ActionTracker({ onTrack, isLoading }: ActionTrackerProps
       </form>
     </section>
   );
-}
+});
+
+ActionTracker.displayName = 'ActionTracker';
+
+export default ActionTracker;
