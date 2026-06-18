@@ -10,6 +10,7 @@ export async function POST(request: Request) {
     
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
+      'X-Forwarded-For': request.headers.get('x-forwarded-for') || '',
     };
 
     // If running in production on Cloud Run, fetch OIDC ID token from Metadata Server

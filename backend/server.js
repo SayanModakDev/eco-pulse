@@ -17,6 +17,9 @@ dotenv.config();
 
 const app = express();
 
+// Trust reverse proxy (e.g. Cloud Run, Load Balancer) to read client IP from X-Forwarded-For header
+app.set('trust proxy', 1);
+
 // Retrieve port from process.env with a default fallback
 const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -56,7 +59,7 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 // SECURITY (Medium Impact): Global rate limit to prevent abuse.
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 10000, // Limit each IP to 10000 requests per windowMs
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: {
