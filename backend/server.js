@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { naturalLanguageInputSchema, profileContextSchema } from './utils/validators.js';
+import apiRouter from './routes/api.js';
 
 // Load environment variables
 dotenv.config();
@@ -69,6 +70,23 @@ const validateRequestBody = (schema) => {
 };
 
 // 6. Routes
+
+// Root welcome endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'Welcome to the Eco-Pulse API Server',
+    version: '1.0.0',
+    endpoints: {
+      health: 'GET /health',
+      query: 'POST /api/query',
+      profile: 'POST /api/profile',
+      track: 'POST /api/track',
+    },
+  });
+});
+
+// Mount the API router containing the multi-agent execution pipeline
+app.use('/api', apiRouter);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

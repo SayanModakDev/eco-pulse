@@ -1,0 +1,14 @@
+{
+  "name": "eco-pulse-root",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev-backend",
+    "dev-backend": "npm run dev --prefix backend",
+    "dev-frontend": "npm run dev --prefix frontend",
+    "install-backend": "npm install --prefix backend",
+    "install-frontend": "npm install --prefix frontend",
+    "start-backend": "npm run start --prefix backend",
+    "start-frontend": "npm run start --prefix frontend",
+    "build-frontend": "npm run build --prefix frontend"
+  }
+}

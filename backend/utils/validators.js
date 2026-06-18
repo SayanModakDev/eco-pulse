@@ -65,4 +65,28 @@ export const profileContextSchema = z.object({
     .array(z.string().trim().max(50))
     .max(20, { message: 'Cannot specify more than 20 tags' })
     .optional(),
+
+  dailyBaselineKg: z
+    .number({
+      invalid_type_error: 'dailyBaselineKg must be a number',
+    })
+    .positive({ message: 'dailyBaselineKg must be positive' })
+    .default(15.0)
+    .optional(),
 });
+
+/**
+ * Schema to validate inputs to the Agent track request.
+ */
+export const trackRequestSchema = z.object({
+  activityString: z
+    .string({
+      required_error: 'activityString is required',
+    })
+    .trim()
+    .min(1, { message: 'activityString cannot be empty' })
+    .max(2000, { message: 'activityString is too long' }),
+
+  profileContext: profileContextSchema.optional(),
+});
+
