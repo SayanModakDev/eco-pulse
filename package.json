@@ -9,6 +9,8 @@
     "install-frontend": "npm install --prefix frontend",
     "start-backend": "npm run start --prefix backend",
     "start-frontend": "npm run start --prefix frontend",
-    "build-frontend": "npm run build --prefix frontend"
+    "build-frontend": "npm run build --prefix frontend",
+    "build": "npm run build-frontend",
+    "test": "npm test --prefix backend"
   }
 }
