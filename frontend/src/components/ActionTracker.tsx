@@ -35,7 +35,7 @@ const ActionTracker = React.memo(({ onTrack, isLoading }: ActionTrackerProps) =>
     try {
       await onTrack(trimmed);
       setActivityString(''); // Reset on successful tracking
-    } catch (err) {
+    } catch {
       setError('Failed to submit. Please check your connection and try again.');
     }
   };
@@ -53,7 +53,7 @@ const ActionTracker = React.memo(({ onTrack, isLoading }: ActionTrackerProps) =>
           Track Your Environmental Actions
         </h2>
         <p className="text-sm text-slate-400 mt-1">
-          Describe your daily actions in natural language (e.g., "I drove 15km in my car and ate a beef burger").
+          Describe your daily actions in natural language (e.g., &quot;I drove 15km in my car and ate a beef burger&quot;).
         </p>
       </header>
 
