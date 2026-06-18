@@ -6,7 +6,7 @@ export async function POST(request: Request) {
     const isDev = process.env.NODE_ENV === 'development';
     
     // In production, the backend is on Cloud Run. In dev, it might be localhost.
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const backendUrl = process.env.BACKEND_API_URL || 'http://localhost:5000';
     
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
