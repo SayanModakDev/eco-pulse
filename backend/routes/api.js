@@ -1,6 +1,7 @@
 import express from 'express';
 import { trackRequestSchema } from '../utils/validators.js';
 import { orchestrateCarbonTracking } from '../agents/orchestrator.js';
+import { logRequestToGCP } from '../utils/gcp.js';
 
 const router = express.Router();
 
@@ -30,6 +31,9 @@ router.post('/track', validateRequestBody(trackRequestSchema), async (req, res, 
       activityString,
       profileContext,
     });
+
+    // Fire off non-blocking logging to GCP Firestore, Cloud Logging, and Cloud Storage
+    logRequestToGCP(activityString, result, profileContext);
 
     res.status(200).json({
       success: true,

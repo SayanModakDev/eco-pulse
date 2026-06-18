@@ -36,7 +36,7 @@ app.use(
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps, curl, or server-to-server requests)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) !== -1 || NODE_ENV === 'development') {
+      if (allowedOrigins.indexOf(origin) !== -1 || NODE_ENV === 'development' || origin.endsWith('.run.app')) {
         return callback(null, true);
       }
       return callback(new Error('Blocked by CORS policy: Origin not allowed'), false);
