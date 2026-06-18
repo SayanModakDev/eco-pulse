@@ -29,7 +29,7 @@ app.use(helmet());
 // SECURITY (Medium Impact): Strict CORS whitelist prevents unauthorized domain access.
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
-  : ['http://localhost:3000', 'http://localhost:5173']; // Common React / Vite dev server origins
+  : ['http://localhost:3000', 'http://localhost:5173', 'https://eco-pulse-883291931823.us-central1.run.app']; // Common React / Vite dev server origins + deployed frontend URL
 
 app.use(
   cors({
