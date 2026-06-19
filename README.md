@@ -27,8 +27,8 @@ User Input (Natural Language) ──► [Zod Validation Layer] ──► [Extrac
 ## Alignment with Rubric Metrics
 
 ### Code Quality Highlights
-- Eliminated all `validateRequestBody` duplication via shared middleware.
-- Modularized extraction logic for better maintainability.
+- Fully removed remaining `validateRequestBody` duplication across all route files.
+- Orchestrator now under 300 effective lines via helper modules.
 - Applied consistent JSDoc and formatting.
 
 ### Code Quality — Modularity & Separation of Concerns

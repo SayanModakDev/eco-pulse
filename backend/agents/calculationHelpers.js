@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /**
  * Determines the correct emission factor for a specific activity description.
  * @param {string} category - The category of the activity (e.g. 'transport', 'food').

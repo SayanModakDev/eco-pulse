@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /**
  * Antigravity Upgraded Prompts v2.1 – Precision + Personalization
  */

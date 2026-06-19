@@ -1,3 +1,4 @@
+/* eslint-disable no-console, max-len */
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";

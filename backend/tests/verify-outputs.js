@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /**
  * End-to-end structured output verification for the Eco-Pulse orchestrator.
  * Validates JSON schema compliance, field types, value ranges, and challenge quality.

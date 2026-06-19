@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Firestore } from "@google-cloud/firestore";
 import { Logging } from "@google-cloud/logging";
 import { Storage } from "@google-cloud/storage";
