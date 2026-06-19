@@ -109,3 +109,70 @@ export const WASTE_KEYWORDS = [
   "dispose",
   "bin",
 ];
+
+// ── Emission Factors ──────────────────────────────────────────────────────
+
+export const EMISSION_FACTORS = {
+  transport: {
+    car: 0.21, // per km
+    drive: 0.21,
+    driving: 0.21,
+    bus: 0.08, // per km
+    train: 0.04, // per km
+    flight: 0.15, // per km
+    fly: 0.15,
+    flying: 0.15,
+    plane: 0.15,
+    motorbike: 0.11, // per km
+    motorcycle: 0.11,
+    scooter: 0.05, // per km (electric scooter / e-scooter)
+    taxi: 0.25, // per km (ride-hail / taxi, higher than private car due to deadheading)
+    bicycle: 0.0, // per km
+    bike: 0.0,
+    cycle: 0.0,
+    walk: 0.0,
+    walking: 0.0,
+    default: 0.18, // slightly higher default to account for mixed/unknown vehicle types
+  },
+  food: {
+    beef: 6.0, // per serving or unit
+    burger: 5.5,
+    hamburger: 5.5,
+    pork: 1.8,
+    chicken: 1.5,
+    poultry: 1.5,
+    fish: 1.2,
+    seafood: 1.2,
+    cheese: 1.0,
+    dairy: 0.8,
+    milk: 0.5,
+    egg: 0.4,
+    rice: 0.4, // per serving (methane-intensive paddy agriculture)
+    pasta: 0.5, // per serving
+    vegetable: 0.3,
+    vegetables: 0.3,
+    salad: 0.3,
+    vegan: 0.2,
+    vegetarian: 0.3,
+    default: 1.4, // slightly lower default reflecting mixed-diet average
+  },
+  energy: {
+    electricity: 0.45, // per kWh
+    kwh: 0.45,
+    gas: 0.2,
+    heating: 0.25,
+    default: 0.35,
+  },
+  waste: {
+    landfill: 0.5, // per kg
+    trash: 0.5,
+    garbage: 0.5,
+    recycle: 0.1,
+    recycling: 0.1,
+    compost: 0.05,
+    default: 0.3,
+  },
+  other: {
+    default: 0.5,
+  },
+};
