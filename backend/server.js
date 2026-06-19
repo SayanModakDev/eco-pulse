@@ -162,7 +162,7 @@ app.post(
 );
 
 // Handle unknown routes
-app.use("*", (req, res, next) => {
+app.use("*", (req, res) => {
   res.status(404).json({
     status: 404,
     message: "Resource not found",
@@ -170,6 +170,7 @@ app.use("*", (req, res, next) => {
 });
 
 // 7. Robust Global Error-Handling Middleware
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   // Handle Zod Validation Errors
   if (err.name === "ZodError" || err.issues) {

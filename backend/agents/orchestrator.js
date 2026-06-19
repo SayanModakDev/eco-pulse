@@ -1,7 +1,14 @@
 import { GoogleGenAI } from "@google/genai";
 import { EXTRACTION_AGENT_PROMPT, INSIGHTS_AGENT_PROMPT } from "./prompts.js";
 import { emissionFactorCache, resultCache } from "../utils/cache.js";
-import { extractActivitiesFallback } from "./fallbackExtractor.js";
+import {
+  extractNumbers,
+  extractTransportActivities,
+  extractFoodActivities,
+  extractEnergyActivities,
+  extractWasteActivities,
+  deduplicateActivities,
+} from "./extractors.js";
 import { processActivity } from "./calculationHelpers.js";
 
 /**
@@ -140,7 +147,29 @@ async function runExtractionAgent(activityString) {
     }
   }
 
-  return extractActivitiesFallback(activityString);
+  // Deterministic Fallback
+  const text = activityString.toLowerCase();
+  const matches = extractNumbers(text);
+
+  let activities = [
+    ...extractTransportActivities(text, matches),
+    ...extractFoodActivities(text, matches),
+    ...extractEnergyActivities(text, matches),
+    ...extractWasteActivities(text, matches),
+  ];
+
+  let uniqueActivities = deduplicateActivities(activities);
+
+  if (uniqueActivities.length === 0) {
+    uniqueActivities.push({
+      category: "other",
+      value: 1,
+      unit: "activity",
+      description: `Generic: ${activityString.substring(0, 50)}`,
+    });
+  }
+
+  return uniqueActivities;
 }
 
 /**

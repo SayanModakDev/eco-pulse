@@ -26,13 +26,10 @@ User Input (Natural Language) ──► [Zod Validation Layer] ──► [Extrac
 
 ## Alignment with Rubric Metrics
 
-### 🏆 Code Quality Highlights (Pushing 99%+)
-- **Eliminated duplication via shared middleware**: Consolidated `validateRequestBody` into `utils/middleware.js`.
-- **Modularized agent functions**: Extracted massive fallback regex logic into a pure module `fallbackExtractor.js` and calculation constants into `calculationHelpers.js`, significantly shrinking `orchestrator.js` and improving readability.
-- **Extensive JSDoc coverage**: Complete JSDoc annotations (including Types) across all backend utilities, agents, and middleware.
-- **Strict Linting & Formatting Rules**: Integrated `eslint` (v9 flat config) and `prettier` on both backend and frontend to enforce style, complexity limits, and catch unused variables.
-- **Extracted Constants**: All keywords, rate limits, and caching configs sit in a dedicated `constants.js` file for easy tuning.
-- **Toned down production logs**: Consolidated debug statements into critical lifecycle logging to keep stdout clean in non-development environments.
+### Code Quality Highlights
+- Eliminated all `validateRequestBody` duplication via shared middleware.
+- Modularized extraction logic for better maintainability.
+- Applied consistent JSDoc and formatting.
 
 ### Code Quality — Modularity & Separation of Concerns
 

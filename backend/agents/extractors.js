@@ -11,11 +11,6 @@ import {
   WASTE_KEYWORDS,
 } from "../utils/constants.js";
 
-/**
- * Extracts all numbers and optional following text (units) from a string.
- * @param {string} text - The input string to parse.
- * @returns {Array<{num: number, unitText: string, index: number}>} An array of matched number objects.
- */
 export function extractNumbers(text) {
   const numberRegex = /(\d+(?:\.\d+)?)\s*([a-zA-Z]+)?/g;
   let match;
@@ -30,13 +25,6 @@ export function extractNumbers(text) {
   return matches;
 }
 
-/**
- * Checks if a keyword appears within a ±50 character range of a given index.
- * @param {string} text - The input text.
- * @param {string} keyword - The keyword to search for.
- * @param {number} index - The anchor index.
- * @returns {boolean} True if keyword is near the index.
- */
 export function isKeywordNear(text, keyword, index) {
   const range = 50;
   const start = Math.max(0, index - range);
@@ -44,12 +32,6 @@ export function isKeywordNear(text, keyword, index) {
   return text.substring(start, end).includes(keyword);
 }
 
-/**
- * Checks if a string contains a word exactly (using word boundaries).
- * @param {string} text - The input text.
- * @param {string} keyword - The word to match.
- * @returns {boolean} True if the word is found.
- */
 export function textHasWord(text, keyword) {
   const regex = new RegExp(
     `\\b${keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
@@ -57,12 +39,6 @@ export function textHasWord(text, keyword) {
   return regex.test(text);
 }
 
-/**
- * Finds the exact index of a whole word in text.
- * @param {string} text - The input text.
- * @param {string} keyword - The word to find.
- * @returns {number} The index of the word, or -1 if not found.
- */
 export function findWordIndex(text, keyword) {
   const regex = new RegExp(
     `\\b${keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
@@ -71,13 +47,6 @@ export function findWordIndex(text, keyword) {
   return m ? m.index : -1;
 }
 
-/**
- * Finds the nearest number match to a given keyword occurrence.
- * @param {string} text - The input text.
- * @param {Array<{index: number}>} matches - List of number matches.
- * @param {string} keyword - The keyword to associate with the number.
- * @returns {Object|null} The nearest match object or null.
- */
 export function findNearestMatch(text, matches, keyword) {
   const kwIndex = findWordIndex(text, keyword);
   if (kwIndex === -1) return null;
@@ -93,17 +62,8 @@ export function findNearestMatch(text, matches, keyword) {
   return nearest;
 }
 
-/**
- * Analyzes text using a deterministic fallback strategy to extract carbon-relevant activities.
- * @param {string} activityString - Natural language string describing activities.
- * @returns {Array<{category: string, value: number, unit: string, description: string}>} Array of extracted activities.
- */
-export function extractActivitiesFallback(activityString) {
-  const text = activityString.toLowerCase();
+export function extractTransportActivities(text, matches) {
   const activities = [];
-  const matches = extractNumbers(text);
-
-  // Transport keywords
   for (const kw of TRANSPORT_KEYWORDS) {
     if (!textHasWord(text, kw)) continue;
     const matchObj = findNearestMatch(text, matches, kw) ||
@@ -135,8 +95,11 @@ export function extractActivitiesFallback(activityString) {
       description,
     });
   }
+  return activities;
+}
 
-  // Food keywords
+export function extractFoodActivities(text, matches) {
+  const activities = [];
   for (const kw of FOOD_KEYWORDS) {
     if (!textHasWord(text, kw)) continue;
     const matchObj = findNearestMatch(text, matches, kw) ||
@@ -151,8 +114,11 @@ export function extractActivitiesFallback(activityString) {
       description: `Consumed ${kw}: ${matchObj.num} ${matchObj.unitText || "serving"}`,
     });
   }
+  return activities;
+}
 
-  // Energy keywords
+export function extractEnergyActivities(text, matches) {
+  const activities = [];
   for (const kw of ENERGY_KEYWORDS) {
     if (!textHasWord(text, kw)) continue;
     const matchObj = findNearestMatch(text, matches, kw) ||
@@ -167,8 +133,11 @@ export function extractActivitiesFallback(activityString) {
       description: `Energy use (${kw}): ${matchObj.num} ${matchObj.unitText || "kwh"}`,
     });
   }
+  return activities;
+}
 
-  // Waste keywords
+export function extractWasteActivities(text, matches) {
+  const activities = [];
   for (const kw of WASTE_KEYWORDS) {
     if (!textHasWord(text, kw)) continue;
     const matchObj = findNearestMatch(text, matches, kw) ||
@@ -183,8 +152,10 @@ export function extractActivitiesFallback(activityString) {
       description: `Waste (${kw}): ${matchObj.num} ${matchObj.unitText || "kg"}`,
     });
   }
+  return activities;
+}
 
-  // Improved deduplication
+export function deduplicateActivities(activities) {
   const uniqueActivities = [];
   const seenKeys = new Set();
   for (const act of activities) {
@@ -194,15 +165,5 @@ export function extractActivitiesFallback(activityString) {
       uniqueActivities.push(act);
     }
   }
-
-  if (uniqueActivities.length === 0) {
-    uniqueActivities.push({
-      category: "other",
-      value: 1,
-      unit: "activity",
-      description: `Generic: ${activityString.substring(0, 50)}`,
-    });
-  }
-
   return uniqueActivities;
 }
