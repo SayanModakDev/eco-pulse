@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Firestore } from "@google-cloud/firestore";
 import { Logging } from "@google-cloud/logging";
 import { Storage } from "@google-cloud/storage";
@@ -13,19 +12,19 @@ let storage;
 try {
   firestore = new Firestore({ projectId });
 } catch (e) {
-  console.warn("Firestore initialization failed:", e.message);
+  console.warn("Firestore initialization failed:", e.message); // eslint-disable-line no-console
 }
 
 try {
   logging = new Logging({ projectId });
 } catch (e) {
-  console.warn("Cloud Logging initialization failed:", e.message);
+  console.warn("Cloud Logging initialization failed:", e.message); // eslint-disable-line no-console
 }
 
 try {
   storage = new Storage({ projectId });
 } catch (e) {
-  console.warn("Cloud Storage initialization failed:", e.message);
+  console.warn("Cloud Storage initialization failed:", e.message); // eslint-disable-line no-console
 }
 
 const BUCKET_NAME = process.env.GCS_BUCKET_NAME || `${projectId}-logs`;
@@ -91,9 +90,8 @@ export const logRequestToGCP = (query, responseData, metadata) => {
       } catch (err) {
         // If bucket does not exist, attempt to create it (only once) and retry
         if (err.code === 404) {
-          console.log(
-            `Bucket ${BUCKET_NAME} not found. Attempting to create it...`,
-          );
+          // eslint-disable-next-line no-console
+          console.log(`Bucket ${BUCKET_NAME} not found. Creating...`);
           await bucket.create({ location: "US" });
           await file.save(content, {
             contentType: "application/json",
@@ -108,10 +106,8 @@ export const logRequestToGCP = (query, responseData, metadata) => {
     results.forEach((result, index) => {
       if (result.status === "rejected") {
         const services = ["Firestore", "Cloud Logging", "Cloud Storage"];
-        console.error(
-          `GCP Integration Error [${services[index]}]:`,
-          result.reason.message,
-        );
+        // eslint-disable-next-line no-console
+        console.error(`GCP Error [${services[index]}]:`, result.reason.message);
       }
     });
   });

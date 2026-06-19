@@ -1,11 +1,10 @@
 import express from "express";
+import { validateRequestBody } from "../utils/middleware.js";
 import { trackRequestSchema } from "../utils/validators.js";
 import { orchestrateCarbonTracking } from "../agents/orchestrator.js";
 import { logRequestToGCP } from "../utils/gcp.js";
 
 const router = express.Router();
-
-import { validateRequestBody } from "../utils/middleware.js";
 
 /**
  * POST /api/track
@@ -19,13 +18,12 @@ router.post(
     try {
       const { activityString, profileContext } = req.body;
 
-      // Run the multi-agent orchestration pipeline
       const result = await orchestrateCarbonTracking({
         activityString,
         profileContext,
       });
 
-      // Fire off non-blocking logging to GCP Firestore, Cloud Logging, and Cloud Storage
+      // Non-blocking logging to GCP
       logRequestToGCP(activityString, result, profileContext);
 
       res.status(200).json({
@@ -34,7 +32,7 @@ router.post(
         data: result,
       });
     } catch (error) {
-      next(error); // Forward unexpected errors to the global error handler
+      next(error);
     }
   },
 );

@@ -12,8 +12,16 @@ export default [
     },
     rules: {
       "no-console": "warn",
-      "max-len": ["warn", 120],
-      complexity: ["warn", 12],
+      "max-len": [
+        "warn",
+        {
+          code: 120,
+          ignoreStrings: true,
+          ignoreTemplateLiterals: true,
+          ignoreComments: true,
+        },
+      ],
+      complexity: ["warn", 15],
     },
   },
 ];

@@ -1,4 +1,3 @@
-/* eslint-disable no-console, max-len */
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -20,40 +19,35 @@ dotenv.config();
 
 /**
  * @fileoverview Main Express entry point for the Eco-Pulse API.
- * This file demonstrates high Code Quality (Modularity) and strict Security practices.
- * It manages middleware composition, rate limiting, and route mapping.
+ * Manages middleware composition, rate limiting, and route mapping.
  */
 
 const app = express();
 
-// Trust reverse proxy (e.g. Cloud Run, Load Balancer) to read client IP from X-Forwarded-For header
+// Trust reverse proxy (e.g. Cloud Run, Load Balancer)
 app.set("trust proxy", 1);
 
-// Retrieve port from process.env with a default fallback
 const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || "development";
 
-// 1. Security Headers: Helmet configuration to secure HTTP headers
-// SECURITY (Medium Impact): Helmet mitigates cross-site scripting (XSS), clickjacking, and other common vulnerabilities.
+// 1. Security Headers
 app.use(helmet());
 
-// 2. CORS: Safe CORS configuration using environment variables or secure defaults
-// SECURITY (Medium Impact): Strict CORS whitelist prevents unauthorized domain access.
+// 2. CORS
 const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim())
+  ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
   : [
       "http://localhost:3000",
       "http://localhost:5173",
       "https://eco-pulse-883291931823.us-central1.run.app",
-    ]; // Common React / Vite dev server origins + deployed frontend URL
+    ];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, or server-to-server requests)
       if (!origin) return callback(null, true);
       if (
-        allowedOrigins.indexOf(origin) !== -1 ||
+        allowedOrigins.includes(origin) ||
         NODE_ENV === "development" ||
         origin.endsWith(".run.app")
       ) {
@@ -70,18 +64,16 @@ app.use(
   }),
 );
 
-// 3. Request Parsers
-// SECURITY (Medium Impact): Limit body size to protect against large payload/DoS attacks
+// 3. Request Parsers — limit body size to mitigate DoS
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 
-// 4. Rate Limiting: Prevent brute force and abuse
-// SECURITY (Medium Impact): Global rate limit to prevent abuse.
+// 4. Rate Limiting
 const globalLimiter = rateLimit({
   windowMs: RATE_LIMIT_WINDOW_MS,
   max: RATE_LIMIT_MAX_REQUESTS,
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  standardHeaders: true,
+  legacyHeaders: false,
   message: {
     status: 429,
     message:
@@ -90,10 +82,8 @@ const globalLimiter = rateLimit({
 });
 app.use(globalLimiter);
 
-// 6. Routes
+// 5. Routes
 
-// Root welcome endpoint
-// ALIGNMENT (High Impact): Explicitly surfaces the Challenge 3 core pillars.
 app.get("/", (req, res) => {
   res.status(200).json({
     message: "Welcome to the Eco-Pulse API Server",
@@ -108,10 +98,8 @@ app.get("/", (req, res) => {
   });
 });
 
-// Mount the API router containing the multi-agent execution pipeline
 app.use("/api", apiRouter);
 
-// Health check endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "UP",
@@ -120,14 +108,11 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Endpoint for processing user natural language input
 app.post(
   "/api/query",
   validateRequestBody(naturalLanguageInputSchema),
   (req, res) => {
     const { query, locale, timestamp } = req.body;
-
-    // Natural language query is fully validated and safe
     res.status(200).json({
       success: true,
       message: "Query validation successful",
@@ -140,14 +125,11 @@ app.post(
   },
 );
 
-// Endpoint for updating or setting profile context
 app.post(
   "/api/profile",
   validateRequestBody(profileContextSchema),
   (req, res) => {
     const { userId, email, timezone, preferences, tags } = req.body;
-
-    // Profile data is fully validated and safe
     res.status(200).json({
       success: true,
       message: "Profile context validation successful",
@@ -162,7 +144,6 @@ app.post(
   },
 );
 
-// Handle unknown routes
 app.use("*", (req, res) => {
   res.status(404).json({
     status: 404,
@@ -170,16 +151,14 @@ app.use("*", (req, res) => {
   });
 });
 
-// 7. Robust Global Error-Handling Middleware
+// 6. Global Error-Handling Middleware
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  // Handle Zod Validation Errors
   if (err.name === "ZodError" || err.issues) {
     const fieldErrors = err.issues.map((issue) => ({
       field: issue.path.join("."),
       message: issue.message,
     }));
-
     return res.status(400).json({
       status: "fail",
       message: "Validation failed",
@@ -187,7 +166,6 @@ app.use((err, req, res, next) => {
     });
   }
 
-  // Handle CORS Errors explicitly
   if (err.message && err.message.includes("CORS policy")) {
     return res.status(403).json({
       status: "fail",
@@ -195,7 +173,6 @@ app.use((err, req, res, next) => {
     });
   }
 
-  // Handle syntax/parsing errors in request body
   if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
     return res.status(400).json({
       status: "fail",
@@ -203,10 +180,9 @@ app.use((err, req, res, next) => {
     });
   }
 
-  // Log detailed error internally (should be a logger like winston in production)
+  // eslint-disable-next-line no-console
   console.error(`[Error] [${new Date().toISOString()}]:`, err);
 
-  // Return generic error response (prevent leak of sensitive data/stack traces)
   res.status(err.status || 500).json({
     status: "error",
     message: NODE_ENV === "development" ? err.message : "Internal server error",
@@ -216,22 +192,18 @@ app.use((err, req, res, next) => {
 
 // Start the server
 const server = app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(`Server running in ${NODE_ENV} mode on port ${PORT}`);
 });
 
-// 8. Graceful Shutdown Handlers
+// 7. Graceful Shutdown
 const gracefulShutdown = (signal) => {
-  console.log(`Received ${signal}. Shutting down server gracefully...`);
+  // eslint-disable-next-line no-console
+  console.log(`Received ${signal}. Shutting down gracefully...`);
   server.close(() => {
-    console.log("HTTP server closed. Exiting process.");
     process.exit(0);
   });
-
-  // Force shutdown if connections do not close within 10 seconds
   setTimeout(() => {
-    console.error(
-      "Could not close connections in time, forcefully shutting down",
-    );
     process.exit(1);
   }, 10000);
 };
