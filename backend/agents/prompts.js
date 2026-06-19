@@ -5,6 +5,7 @@
 /**
  * Strictly engineered system prompt for Agent 1 (Extraction Agent).
  * Emphasizes parsing natural language input, few-shot examples, and emitting structured JSON only.
+ * @type {string}
  */
 export const EXTRACTION_AGENT_PROMPT = `
 You are a world-class Precision Carbon Extraction Agent for Eco-Pulse.
@@ -40,6 +41,7 @@ You are a world-class Precision Carbon Extraction Agent for Eco-Pulse.
  * Strictly engineered system prompt for Agent 3 (Insights & Mitigation Agent).
  * Focuses on generating hyper-personalized micro-challenges based on carbon hotspots,
  * plus a summaryInsight.
+ * @type {string}
  */
 export const INSIGHTS_AGENT_PROMPT = `
 You are an elite Sustainability Insights & Mitigation Agent for Eco-Pulse.

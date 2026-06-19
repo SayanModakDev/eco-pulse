@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Eco-Pulse — Carbon Footprint Tracker & Mitigation Dashboard",
-  description: "Monitor, understand, and reduce your daily carbon footprint with intelligent activity tracking and personalized sustainability challenges.",
+  description:
+    "Monitor, understand, and reduce your daily carbon footprint with intelligent activity tracking and personalized sustainability challenges.",
 };
 
 export default function RootLayout({

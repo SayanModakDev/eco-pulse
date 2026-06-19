@@ -15,5 +15,11 @@
     "test-frontend": "npm test --prefix frontend",
     "test": "npm run test-backend && npm run test-frontend",
     "lint": "npm run lint --prefix frontend"
+  },
+  "devDependencies": {
+    "eslint": "^10.5.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "prettier": "^3.8.4"
   }
 }

@@ -15,7 +15,10 @@ class MemoryCache {
    * @param {number} [options.ttlMs] - Time-to-live in milliseconds for each entry.
    * @param {number} [options.maxEntries] - Maximum entries before oldest are evicted.
    */
-  constructor({ ttlMs = DEFAULT_TTL_MS, maxEntries = DEFAULT_MAX_ENTRIES } = {}) {
+  constructor({
+    ttlMs = DEFAULT_TTL_MS,
+    maxEntries = DEFAULT_MAX_ENTRIES,
+  } = {}) {
     /** @type {Map<string, { value: any, expiresAt: number }>} */
     this._store = new Map();
     this._ttlMs = ttlMs;
