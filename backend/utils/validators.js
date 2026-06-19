@@ -13,7 +13,7 @@ export const naturalLanguageInputSchema = z.object({
     })
     .trim()
     .min(1, { message: 'Query cannot be empty' })
-    .max(1000, { message: 'Query must be under 1000 characters to prevent overflow' }),
+    .max(500, { message: 'Query must be under 500 characters' }),
   
   locale: z
     .string()
@@ -38,31 +38,42 @@ export const profileContextSchema = z.object({
     })
     .trim()
     .min(1, { message: 'userId cannot be empty' })
-    .max(128, { message: 'userId is too long' }),
+    .max(64, { message: 'userId must be under 64 characters' }),
 
   email: z
     .string({
       required_error: 'Email is required',
     })
     .trim()
+    .max(254, { message: 'Email exceeds maximum RFC 5321 length' })
     .email({ message: 'Invalid email address' }),
+
+  displayName: z
+    .string()
+    .trim()
+    .min(1, { message: 'displayName cannot be empty' })
+    .max(100, { message: 'displayName must be under 100 characters' })
+    .optional(),
 
   timezone: z
     .string()
     .trim()
     .min(1, { message: 'Timezone cannot be empty' })
+    .max(50, { message: 'Timezone must be under 50 characters' })
     .optional(),
 
   preferences: z
     .object({
       theme: z.enum(['light', 'dark', 'system']).default('system'),
       notificationsEnabled: z.boolean().default(true),
-      languagePreference: z.string().trim().max(10).optional(),
+      languagePreference: z.string().trim().min(2).max(5).optional(),
     })
     .default({}),
 
   tags: z
-    .array(z.string().trim().max(50))
+    .array(
+      z.string().trim().min(1, { message: 'Tag cannot be empty' }).max(50, { message: 'Tag must be under 50 characters' })
+    )
     .max(20, { message: 'Cannot specify more than 20 tags' })
     .optional(),
 
@@ -71,6 +82,7 @@ export const profileContextSchema = z.object({
       invalid_type_error: 'dailyBaselineKg must be a number',
     })
     .positive({ message: 'dailyBaselineKg must be positive' })
+    .max(500, { message: 'dailyBaselineKg cannot exceed 500 kg' })
     .default(15.0)
     .optional(),
 });
@@ -85,7 +97,7 @@ export const trackRequestSchema = z.object({
     })
     .trim()
     .min(1, { message: 'activityString cannot be empty' })
-    .max(2000, { message: 'activityString is too long' }),
+    .max(1000, { message: 'activityString is too long (max 1000 characters)' }),
 
   profileContext: profileContextSchema.optional(),
 });

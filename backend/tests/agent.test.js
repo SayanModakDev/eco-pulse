@@ -40,12 +40,12 @@ describe('Zod Schema Validations', () => {
       );
     });
 
-    it('should reject a query exceeding 1000 characters', () => {
-      const longQuery = 'a'.repeat(1001);
+    it('should reject a query exceeding 500 characters', () => {
+      const longQuery = 'a'.repeat(501);
       assert.throws(
         () => naturalLanguageInputSchema.parse({ query: longQuery }),
         (err) => {
-          assert.ok(err.issues.some((i) => i.message.includes('1000')));
+          assert.ok(err.issues.some((i) => i.message.includes('500')));
           return true;
         }
       );
@@ -110,9 +110,9 @@ describe('Zod Schema Validations', () => {
       );
     });
 
-    it('should reject an activityString exceeding 2000 characters', () => {
+    it('should reject an activityString exceeding 1000 characters', () => {
       assert.throws(
-        () => trackRequestSchema.parse({ activityString: 'x'.repeat(2001) }),
+        () => trackRequestSchema.parse({ activityString: 'x'.repeat(1001) }),
         (err) => {
           assert.ok(err.issues.some((i) => i.message.includes('too long')));
           return true;
@@ -202,8 +202,9 @@ describe('Agent Orchestrator Pipeline', () => {
     assert.equal(typeof result.summary.totalCo2eKg, 'number');
     assert.equal(result.summary.dailyBaselineKg, 10);
     assert.ok(['under_baseline', 'over_baseline'].includes(result.summary.status));
-    assert.ok(Array.isArray(result.challenges));
-    assert.ok(result.challenges.length > 0);
+    assert.ok(Array.isArray(result.microChallenges));
+    assert.ok(result.microChallenges.length > 0);
+    assert.ok(typeof result.summaryInsight === 'string');
   });
 
   it('should handle an input with no recognizable activities gracefully', async () => {
@@ -250,18 +251,19 @@ describe('Agent Orchestrator Pipeline', () => {
     }
   });
 
-  it('should return challenges matching the hotspot category', async () => {
+  it('should return microChallenges matching the hotspot category', async () => {
     const result = await orchestrateCarbonTracking({
       activityString: 'I drove my car for 50km',
     });
 
-    assert.ok(result.challenges.length > 0);
+    assert.ok(result.microChallenges.length > 0);
     // Each challenge must have the required shape
-    for (const challenge of result.challenges) {
+    for (const challenge of result.microChallenges) {
       assert.ok(challenge.title);
       assert.ok(challenge.description);
       assert.equal(typeof challenge.potentialSavingKg, 'number');
       assert.ok(['easy', 'medium', 'hard'].includes(challenge.difficulty));
+      assert.ok(['transport', 'food', 'energy', 'waste', 'other'].includes(challenge.category));
     }
   });
 
@@ -272,6 +274,136 @@ describe('Agent Orchestrator Pipeline', () => {
 
     assert.equal(result.summary.dailyBaselineKg, 15.0);
     assert.equal(result.profileApplied.userId, 'anonymous');
+  });
+
+  // ── New v2.1 Upgrade Tests ──────────────────────────────────────────────
+
+  it('should handle vague input with no quantities and fall back gracefully', async () => {
+    const result = await orchestrateCarbonTracking({
+      activityString: 'went somewhere today',
+    });
+
+    // Should produce at least one activity (generic fallback)
+    assert.ok(result.activities.length > 0);
+    assert.equal(typeof result.summary.totalCo2eKg, 'number');
+    assert.ok(result.summary.totalCo2eKg >= 0);
+    // microChallenges and summaryInsight should always be present
+    assert.ok(Array.isArray(result.microChallenges));
+    assert.ok(typeof result.summaryInsight === 'string');
+  });
+
+  it('should extract multiple activities across 3+ categories from a complex input', async () => {
+    const result = await orchestrateCarbonTracking({
+      activityString: 'I drove 30km to work, ate 2 beef burgers for lunch, and used 10kwh of electricity at home',
+    });
+
+    // Should have activities in transport, food, and energy
+    const categories = new Set(result.activities.map(a => a.category));
+    assert.ok(categories.has('transport'), 'Should detect transport');
+    assert.ok(categories.has('food'), 'Should detect food');
+    assert.ok(categories.has('energy'), 'Should detect energy');
+    assert.ok(result.activities.length >= 3, 'Should extract at least 3 activities');
+    assert.ok(result.summary.totalCo2eKg > 0);
+  });
+
+  it('should recognize new transport keywords: taxi and scooter', async () => {
+    const result = await orchestrateCarbonTracking({
+      activityString: 'I took a taxi for 15km and then rode a scooter for 5km',
+    });
+
+    const descriptions = result.activities.map(a => a.description.toLowerCase()).join(' ');
+    assert.ok(
+      descriptions.includes('taxi') || descriptions.includes('ride-hail'),
+      'Should detect taxi keyword'
+    );
+    assert.ok(descriptions.includes('scooter'), 'Should detect scooter keyword');
+    assert.ok(result.summary.totalCo2eKg > 0);
+  });
+
+  it('should recognize new food keywords: rice and pasta', async () => {
+    const result = await orchestrateCarbonTracking({
+      activityString: 'I had 2 servings of rice and 1 pasta for dinner',
+    });
+
+    const foodActivities = result.activities.filter(a => a.category === 'food');
+    assert.ok(foodActivities.length >= 2, 'Should extract at least 2 food activities');
+    const descriptions = foodActivities.map(a => a.description.toLowerCase()).join(' ');
+    assert.ok(descriptions.includes('rice'), 'Should detect rice');
+    assert.ok(descriptions.includes('pasta'), 'Should detect pasta');
+  });
+
+  it('should extract energy usage from kilowatt-hour mentions', async () => {
+    const result = await orchestrateCarbonTracking({
+      activityString: 'Used 8kwh of electricity running the AC all day',
+    });
+
+    const energyActivities = result.activities.filter(a => a.category === 'energy');
+    assert.ok(energyActivities.length >= 1, 'Should extract at least 1 energy activity');
+    // Should compute a meaningful CO2e value (8 * 0.45 = 3.6)
+    const totalEnergyCo2 = energyActivities.reduce((sum, a) => sum + a.co2eKg, 0);
+    assert.ok(totalEnergyCo2 > 0, 'Energy CO2e should be positive');
+  });
+
+  it('should extract waste-related activities from trash/recycle keywords', async () => {
+    const result = await orchestrateCarbonTracking({
+      activityString: 'I threw 3kg of trash in the garbage and recycled 2kg of paper',
+    });
+
+    const wasteActivities = result.activities.filter(a => a.category === 'waste');
+    assert.ok(wasteActivities.length >= 1, 'Should extract at least 1 waste activity');
+    assert.ok(result.summary.totalCo2eKg > 0);
+  });
+
+  it('should produce a summaryInsight relevant to the hotspot category', async () => {
+    const result = await orchestrateCarbonTracking({
+      activityString: 'I ate 5 beef steaks today',
+    });
+
+    assert.equal(result.summary.hotspot.category, 'food');
+    assert.ok(result.summaryInsight.length > 0, 'summaryInsight should not be empty');
+    // Fallback summaryInsight for food should mention food-related language
+    assert.ok(
+      result.summaryInsight.toLowerCase().includes('food') ||
+      result.summaryInsight.toLowerCase().includes('plate') ||
+      result.summaryInsight.toLowerCase().includes('swap'),
+      'summaryInsight should be relevant to food hotspot'
+    );
+  });
+
+  it('should handle decimal values correctly in activity extraction', async () => {
+    const result = await orchestrateCarbonTracking({
+      activityString: 'Drove 12.5km to the store',
+    });
+
+    const transportActs = result.activities.filter(a => a.category === 'transport');
+    assert.ok(transportActs.length >= 1);
+    // At least one activity should have the decimal value 12.5
+    const hasDecimal = transportActs.some(a => a.value === 12.5);
+    assert.ok(hasDecimal, 'Should correctly parse decimal value 12.5');
+  });
+
+  it('should respect custom dailyBaselineKg from profileContext', async () => {
+    const result = await orchestrateCarbonTracking({
+      activityString: 'I drove 5km',
+      profileContext: { userId: 'custom', email: 'c@c.com', dailyBaselineKg: 2.0 },
+    });
+
+    assert.equal(result.summary.dailyBaselineKg, 2.0);
+    // 5km * 0.21 = 1.05 kg, which exceeds 2.0? No, 1.05 < 2.0
+    // But 5km matched by 'km' uses car factor 0.21, so 5 * 0.21 = 1.05
+    assert.ok(result.summary.totalCo2eKg > 0);
+    assert.ok(['under_baseline', 'over_baseline'].includes(result.summary.status));
+  });
+
+  it('should handle unicode and emoji input without crashing', async () => {
+    const result = await orchestrateCarbonTracking({
+      activityString: '🚗 drove 10km and ate 🍔 burger',
+    });
+
+    assert.ok(result.activities.length > 0);
+    assert.equal(typeof result.summary.totalCo2eKg, 'number');
+    assert.ok(Array.isArray(result.microChallenges));
+    assert.ok(typeof result.summaryInsight === 'string');
   });
 });
 

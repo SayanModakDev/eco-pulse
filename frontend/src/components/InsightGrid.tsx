@@ -7,6 +7,7 @@ export interface Challenge {
   description: string;
   potentialSavingKg: number;
   difficulty: 'easy' | 'medium' | 'hard';
+  category?: 'transport' | 'food' | 'energy' | 'waste' | 'other';
 }
 
 interface InsightGridProps {

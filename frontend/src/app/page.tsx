@@ -23,7 +23,8 @@ interface TrackingData {
     status: 'under_baseline' | 'over_baseline';
     hotspot: ActivityItem | null;
   };
-  challenges: Challenge[];
+  microChallenges: Challenge[];
+  summaryInsight: string;
 }
 
 export default function DashboardPage() {
@@ -216,7 +217,12 @@ export default function DashboardPage() {
             <ActionTracker onTrack={handleTrackActivity} isLoading={isLoading} />
             
             {/* REDUCE Pillar: list of micro challenges */}
-            <InsightGrid challenges={data?.challenges || []} />
+            {data?.summaryInsight && (
+              <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/15 text-sm text-emerald-300 font-medium leading-relaxed">
+                {data.summaryInsight}
+              </div>
+            )}
+            <InsightGrid challenges={data?.microChallenges || []} />
           </div>
 
           {/* Session history section */}
