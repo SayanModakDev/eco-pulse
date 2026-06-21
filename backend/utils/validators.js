@@ -125,7 +125,10 @@ export const rootResponseSchema = z.object({
 
 export const healthResponseSchema = z.object({
   status: z.string(),
+  uptime: z.number().optional(),
   timestamp: z.string(),
+  memoryUsage: z.record(z.number()).optional(),
+  nodeVersion: z.string().optional(),
   environment: z.string(),
 });
 

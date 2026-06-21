@@ -12,12 +12,23 @@ test("API Response Schema Validations", async (t) => {
   await t.test("healthResponseSchema should validate correctly", () => {
     const validPayload = {
       status: "UP",
+      uptime: 120.5,
       timestamp: new Date().toISOString(),
+      memoryUsage: { rss: 12345, heapTotal: 5678, heapUsed: 1234, external: 123 },
+      nodeVersion: "v18.0.0",
       environment: "test",
     };
     assert.doesNotThrow(() => healthResponseSchema.parse(validPayload));
 
-    const invalidPayload = { status: "UP" }; // Missing fields
+    // The new fields are optional to maintain backward compatibility for older payloads if any
+    const legacyPayload = {
+      status: "UP",
+      timestamp: new Date().toISOString(),
+      environment: "test",
+    };
+    assert.doesNotThrow(() => healthResponseSchema.parse(legacyPayload));
+
+    const invalidPayload = { status: "UP" }; // Missing required fields
     assert.throws(() => healthResponseSchema.parse(invalidPayload));
   });
 

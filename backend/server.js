@@ -127,7 +127,10 @@ app.use("/api", apiRouter);
 app.get("/health", (req, res) => {
   const payload = {
     status: "UP",
+    uptime: process.uptime(),
     timestamp: new Date().toISOString(),
+    memoryUsage: process.memoryUsage(),
+    nodeVersion: process.version,
     environment: NODE_ENV,
   };
   return sendValidatedResponse(req, res, healthResponseSchema, payload);
