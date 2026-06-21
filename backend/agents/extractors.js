@@ -37,7 +37,9 @@ const wordRegexCache = new Map();
 function getWordRegex(keyword) {
   let regex = wordRegexCache.get(keyword);
   if (!regex) {
-    regex = new RegExp(`\\b${keyword.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\b`);
+    regex = new RegExp(
+      `\\b${keyword.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\b`,
+    );
     wordRegexCache.set(keyword, regex);
   }
   return regex;

@@ -33,7 +33,9 @@ describe("InsightGrid Component", () => {
 
   it("toggles challenge completion state on button click", () => {
     render(<InsightGrid challenges={[mockChallenges[0]]} />);
-    const button = screen.getByRole("button", { name: /Mark "Test Challenge 1" challenge as complete/i });
+    const button = screen.getByRole("button", {
+      name: /Mark "Test Challenge 1" challenge as complete/i,
+    });
 
     // Initial state
     expect(button).toHaveTextContent("Complete Challenge");

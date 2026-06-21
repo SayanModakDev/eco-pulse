@@ -66,7 +66,8 @@ export default function DashboardPage() {
           throw new Error(errorData.message || "API request failed");
         }
 
-        const result: { success: boolean; data: TrackingData } = await response.json();
+        const result: { success: boolean; data: TrackingData } =
+          await response.json();
 
         if (result.success && result.data) {
           setData(result.data);
@@ -331,7 +332,8 @@ export default function DashboardPage() {
             © {new Date().getFullYear()} Eco-Pulse Carbon Mitigation Dashboard.
           </p>
           <p className="mt-1">
-            Built using Next.js & Tailwind CSS, following WCAG AA accessibility practices.
+            Built using Next.js & Tailwind CSS, following WCAG AA accessibility
+            practices.
           </p>
         </div>
       </footer>

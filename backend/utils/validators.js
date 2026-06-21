@@ -110,4 +110,4 @@ export const trackRequestSchema = z.object({
   profileContext: profileContextSchema.optional(),
 });
 
-export const sanitizeInput = (str) => str.replace(/[<>"'&]/g, '').trim();
+export const sanitizeInput = (str) => str.replace(/[<>"'&]/g, "").trim();
