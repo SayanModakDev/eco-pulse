@@ -48,9 +48,9 @@ EcoPulse explicitly addresses the three core pillars of the Carbon Footprint Awa
 *   **Outcome:** Provides immediate, scientifically grounded feedback on the user's environmental impact with 100% mathematical consistency.
 
 #### 3. Reduce: Actionable, Measurable Micro-Challenges
-*   **Feature:** Hyper-personalized, category-specific mitigation challenges generated based on the user's highest emission "hotspot" (e.g., food, transport).
-*   **Implementation:** The Insights Agent (`backend/agents/orchestrator.js`) generates dynamic `microChallenges` mapped to the hotspot category. Each challenge includes a specific `estimatedCO2SavingsKg` metric, which is then deterministically extrapolated into weekly, monthly, and annual projections. The `<InsightGrid />` (`frontend/src/components/InsightGrid.tsx`) prominently displays these savings projections.
-*   **Outcome:** Empowers users with clear, actionable steps that provide transparent, mathematically sound projections of long-term carbon footprint reduction.
+*   **Feature:** Hyper-personalized, category-specific mitigation challenges generated based on the user's highest emission "hotspot" (e.g., food, transport), with interactive completion tracking.
+*   **Implementation:** The Insights Agent (`backend/agents/orchestrator.js`) generates dynamic `microChallenges` mapped to the hotspot category. Each challenge includes a specific `estimatedCO2SavingsKg` metric. The `<InsightGrid />` component passes completed challenges up to the main dashboard state (`frontend/src/app/page.tsx`), which instantly subtracts the mitigated emissions from the `Current Footprint` and re-evaluates the daily target deviation.
+*   **Outcome:** Empowers users with actionable steps and provides a highly engaging, immediate feedback loop where completing a challenge transparently and mathematically reduces their overall tracked carbon footprint.
 
 Live demos: [Frontend](https://eco-pulse-883291931823.us-central1.run.app) | [Backend Health](https://eco-pulse-backend-883291931823.us-central1.run.app/health).
 
