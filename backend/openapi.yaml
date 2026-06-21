@@ -355,7 +355,8 @@ components:
                   - title
                   - description
                   - category
-                  - potentialSavingKg
+                  - estimatedCO2SavingsKg
+                  - projections
                   - difficulty
                 properties:
                   id:
@@ -366,8 +367,21 @@ components:
                     type: string
                   category:
                     type: string
-                  potentialSavingKg:
+                  estimatedCO2SavingsKg:
                     type: number
+                  projections:
+                    type: object
+                    required:
+                      - weekly
+                      - monthly
+                      - annual
+                    properties:
+                      weekly:
+                        type: number
+                      monthly:
+                        type: number
+                      annual:
+                        type: number
                   difficulty:
                     type: string
                     enum: [easy, medium, hard]

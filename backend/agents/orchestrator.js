@@ -79,7 +79,7 @@ const INSIGHTS_SCHEMA = {
         properties: {
           title: { type: "STRING" },
           description: { type: "STRING" },
-          potentialSavingKg: { type: "NUMBER" },
+          estimatedCO2SavingsKg: { type: "NUMBER" },
           difficulty: {
             type: "STRING",
             enum: ["easy", "medium", "hard"],
@@ -92,7 +92,7 @@ const INSIGHTS_SCHEMA = {
         required: [
           "title",
           "description",
-          "potentialSavingKg",
+          "estimatedCO2SavingsKg",
           "difficulty",
           "category",
         ],
@@ -249,8 +249,25 @@ async function runInsightsAgent(calculationResults) {
       if (response.text) {
         const parsed = JSON.parse(response.text);
         if (parsed && Array.isArray(parsed.microChallenges)) {
+          const challengesWithProjections = parsed.microChallenges.map((mc, idx) => {
+            const savings = mc.estimatedCO2SavingsKg || mc.potentialSavingKg || 0;
+            return {
+              id: `llm-challenge-${idx}`,
+              title: mc.title,
+              description: mc.description,
+              category: mc.category,
+              difficulty: mc.difficulty,
+              estimatedCO2SavingsKg: savings,
+              projections: {
+                weekly: parseFloat((savings * 7).toFixed(2)),
+                monthly: parseFloat((savings * 30).toFixed(2)),
+                annual: parseFloat((savings * 365).toFixed(2)),
+              },
+            };
+          });
+
           return {
-            microChallenges: parsed.microChallenges,
+            microChallenges: challengesWithProjections,
             summaryInsight: parsed.summaryInsight || "",
           };
         }
@@ -261,9 +278,23 @@ async function runInsightsAgent(calculationResults) {
   }
 
   // Deterministic fallback from insightsFallbacks.js
+  const fallbackList = defaultChallenges[hotspotCategory] || defaultChallenges.other;
+  const challengesWithProjections = fallbackList.map((mc, idx) => {
+    const savings = mc.estimatedCO2SavingsKg || mc.potentialSavingKg || 0;
+    return {
+      id: `fallback-challenge-${idx}`,
+      ...mc,
+      estimatedCO2SavingsKg: savings,
+      projections: {
+        weekly: parseFloat((savings * 7).toFixed(2)),
+        monthly: parseFloat((savings * 30).toFixed(2)),
+        annual: parseFloat((savings * 365).toFixed(2)),
+      },
+    };
+  });
+
   return {
-    microChallenges:
-      defaultChallenges[hotspotCategory] || defaultChallenges.other,
+    microChallenges: challengesWithProjections,
     summaryInsight:
       defaultSummaryInsights[hotspotCategory] || defaultSummaryInsights.other,
   };

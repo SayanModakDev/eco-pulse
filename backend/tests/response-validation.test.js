@@ -53,7 +53,12 @@ test("API Response Schema Validations", async (t) => {
             title: "Eat less meat",
             description: "Try a vegan meal",
             category: "food",
-            potentialSavingKg: 3.0,
+            estimatedCO2SavingsKg: 3.0,
+            projections: {
+              weekly: 21,
+              monthly: 90,
+              annual: 1095,
+            },
             difficulty: "easy",
           },
         ],

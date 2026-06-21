@@ -172,7 +172,12 @@ const microChallengeSchema = z.object({
   title: z.string(),
   description: z.string(),
   category: z.string(),
-  potentialSavingKg: z.number(),
+  estimatedCO2SavingsKg: z.number(),
+  projections: z.object({
+    weekly: z.number(),
+    monthly: z.number(),
+    annual: z.number(),
+  }),
   difficulty: z.enum(["easy", "medium", "hard"]),
 });
 

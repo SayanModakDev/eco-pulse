@@ -276,7 +276,7 @@ describe("Agent Orchestrator Pipeline", () => {
     for (const challenge of result.microChallenges) {
       assert.ok(challenge.title);
       assert.ok(challenge.description);
-      assert.equal(typeof challenge.potentialSavingKg, "number");
+      assert.equal(typeof challenge.estimatedCO2SavingsKg, "number");
       assert.ok(["easy", "medium", "hard"].includes(challenge.difficulty));
       assert.ok(
         ["transport", "food", "energy", "waste", "other"].includes(

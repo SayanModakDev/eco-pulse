@@ -5,7 +5,12 @@ import React, { useState, useCallback } from "react";
 export interface Challenge {
   title: string;
   description: string;
-  potentialSavingKg: number;
+  estimatedCO2SavingsKg: number;
+  projections: {
+    weekly: number;
+    monthly: number;
+    annual: number;
+  };
   difficulty: "easy" | "medium" | "hard";
   category?: "transport" | "food" | "energy" | "waste" | "other";
 }
@@ -114,9 +119,9 @@ const InsightGrid = React.memo(({ challenges }: InsightGridProps) => {
 
                   <span
                     className="text-sm font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg flex items-center gap-1"
-                    aria-label={`Saves ${challenge.potentialSavingKg} kilograms of carbon dioxide equivalent`}
+                    aria-label={`Saves ${challenge.estimatedCO2SavingsKg} kilograms of carbon dioxide equivalent per day`}
                   >
-                    -{challenge.potentialSavingKg} kg CO₂e
+                    -{challenge.estimatedCO2SavingsKg} kg/day CO₂e
                   </span>
                 </div>
 
@@ -139,6 +144,22 @@ const InsightGrid = React.memo(({ challenges }: InsightGridProps) => {
                 >
                   {challenge.description}
                 </p>
+
+                {/* Projections Grid */}
+                <div className={`mt-4 grid grid-cols-3 gap-2 border-t pt-4 ${isCompleted ? "border-slate-800/40 opacity-50" : "border-slate-800/80"}`}>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">Weekly</span>
+                    <span className="text-sm font-semibold text-emerald-400/90">-{challenge.projections.weekly} kg</span>
+                  </div>
+                  <div className="flex flex-col border-l border-slate-800 pl-2">
+                    <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">Monthly</span>
+                    <span className="text-sm font-semibold text-emerald-400/90">-{challenge.projections.monthly} kg</span>
+                  </div>
+                  <div className="flex flex-col border-l border-slate-800 pl-2">
+                    <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">Annual</span>
+                    <span className="text-sm font-semibold text-emerald-500">-{challenge.projections.annual} kg</span>
+                  </div>
+                </div>
               </div>
 
               <div className="mt-6 pt-4 border-t border-slate-800/60 flex items-center justify-between">

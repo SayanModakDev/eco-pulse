@@ -157,13 +157,32 @@ function assertChallengeShape(challenge, index, label) {
     `${tag}: description must be non-empty`,
   );
   assert.equal(
-    typeof challenge.potentialSavingKg,
+    typeof challenge.estimatedCO2SavingsKg,
     "number",
-    `${tag}: potentialSavingKg must be number`,
+    `${tag}: estimatedCO2SavingsKg must be number`,
   );
   assert.ok(
-    challenge.potentialSavingKg > 0,
-    `${tag}: potentialSavingKg must be positive`,
+    challenge.estimatedCO2SavingsKg > 0,
+    `${tag}: estimatedCO2SavingsKg must be positive`,
+  );
+  assert.ok(
+    typeof challenge.projections === "object",
+    `${tag}: projections must be object`,
+  );
+  assert.equal(
+    typeof challenge.projections.weekly,
+    "number",
+    `${tag}: weekly projection must be number`,
+  );
+  assert.equal(
+    typeof challenge.projections.monthly,
+    "number",
+    `${tag}: monthly projection must be number`,
+  );
+  assert.equal(
+    typeof challenge.projections.annual,
+    "number",
+    `${tag}: annual projection must be number`,
   );
   assert.ok(
     ["easy", "medium", "hard"].includes(challenge.difficulty),
@@ -289,7 +308,7 @@ describe("Challenge Quality Assessment", () => {
         "All challenges for food hotspot should be food category",
       );
       assert.ok(
-        ch.potentialSavingKg >= 0.1,
+        ch.estimatedCO2SavingsKg >= 0.1,
         "Saving should be at least 0.1 kg",
       );
       assert.ok(ch.title.length >= 4, "Title should be at least 4 characters");
@@ -313,7 +332,7 @@ describe("Challenge Quality Assessment", () => {
         "All challenges for transport hotspot should be transport category",
       );
       assert.ok(
-        ch.potentialSavingKg >= 0.1,
+        ch.estimatedCO2SavingsKg >= 0.1,
         "Saving should be at least 0.1 kg",
       );
     }
@@ -348,16 +367,16 @@ describe("Challenge Quality Assessment", () => {
     );
   });
 
-  it("potentialSavingKg values should be realistic (< 50 kg per challenge)", async () => {
+  it("estimatedCO2SavingsKg values should be realistic (< 50 kg per challenge)", async () => {
     const result = await orchestrateCarbonTracking({
       activityString: "I drove 100km and ate 5 beef burgers",
     });
 
     for (const ch of result.microChallenges) {
-      assert.ok(ch.potentialSavingKg > 0, "Saving must be positive");
+      assert.ok(ch.estimatedCO2SavingsKg > 0, "Saving must be positive");
       assert.ok(
-        ch.potentialSavingKg < 50,
-        `Saving ${ch.potentialSavingKg} kg is unrealistically high`,
+        ch.estimatedCO2SavingsKg < 50,
+        `Saving ${ch.estimatedCO2SavingsKg} kg is unrealistically high`,
       );
     }
   });

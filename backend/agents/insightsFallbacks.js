@@ -8,7 +8,7 @@ export const defaultChallenges = {
       title: "Try a Meatless Monday",
       description:
         "Based on your recent beef consumption, substitute with lentils or a plant-based option in your next meal for major savings.",
-      potentialSavingKg: 4.8,
+      estimatedCO2SavingsKg: 4.8,
       difficulty: "easy",
       category: "food",
     },
@@ -16,7 +16,7 @@ export const defaultChallenges = {
       title: "Swap Beef for Chicken",
       description:
         "Transition your main protein from beef to poultry for your next meal. Chicken has a carbon footprint nearly 4x smaller than beef per serving.",
-      potentialSavingKg: 3.5,
+      estimatedCO2SavingsKg: 3.5,
       difficulty: "easy",
       category: "food",
     },
@@ -26,7 +26,7 @@ export const defaultChallenges = {
       title: "Go Car-Free This Trip",
       description:
         "For your next journey under 5km, leave the car key behind and choose to walk, cycle, or use public transport. You'll save emissions and gain exercise.",
-      potentialSavingKg: 1.8,
+      estimatedCO2SavingsKg: 1.8,
       difficulty: "medium",
       category: "transport",
     },
@@ -34,7 +34,7 @@ export const defaultChallenges = {
       title: "Combine Your Car Trips",
       description:
         "Plan ahead and consolidate multiple short errands into a single trip. Cold engine starts produce disproportionately high emissions.",
-      potentialSavingKg: 0.9,
+      estimatedCO2SavingsKg: 0.9,
       difficulty: "easy",
       category: "transport",
     },
@@ -44,7 +44,7 @@ export const defaultChallenges = {
       title: "Hunt Your Standby Power",
       description:
         "Walk around your home and unplug 3 vampire electronics (TV boxes, microwave displays, chargers) that consume energy even when idle.",
-      potentialSavingKg: 0.6,
+      estimatedCO2SavingsKg: 0.6,
       difficulty: "easy",
       category: "energy",
     },
@@ -52,7 +52,7 @@ export const defaultChallenges = {
       title: "Shift Your Thermostat 1°",
       description:
         "Set your AC 1 degree higher or heater 1 degree lower today. This small shift can save a significant chunk of HVAC energy over the day.",
-      potentialSavingKg: 1.2,
+      estimatedCO2SavingsKg: 1.2,
       difficulty: "easy",
       category: "energy",
     },
@@ -62,7 +62,7 @@ export const defaultChallenges = {
       title: "Go Zero-Waste at Meals",
       description:
         "Avoid all single-use plastics and packaging for your meals today. Pack food in reusable containers and carry a reusable water bottle.",
-      potentialSavingKg: 0.4,
+      estimatedCO2SavingsKg: 0.4,
       difficulty: "medium",
       category: "waste",
     },
@@ -72,7 +72,7 @@ export const defaultChallenges = {
       title: "Do a Digital Clean-Up",
       description:
         "Delete 100 old emails and clear files from your cloud storage trash to reduce remote data center server load and energy use.",
-      potentialSavingKg: 0.1,
+      estimatedCO2SavingsKg: 0.1,
       difficulty: "easy",
       category: "other",
     },

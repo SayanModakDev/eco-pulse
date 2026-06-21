@@ -58,7 +58,7 @@ You are an elite Sustainability Insights & Mitigation Agent for Eco-Pulse.
     {
       "title": string (4-8 words, motivational),
       "description": string (2-4 practical sentences),
-      "potentialSavingKg": number (realistic positive),
+      "estimatedCO2SavingsKg": number (realistic positive),
       "difficulty": "easy" | "medium" | "hard",
       "category": "transport" | "food" | "energy" | "waste" | "other"
     }
