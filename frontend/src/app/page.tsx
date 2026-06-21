@@ -27,12 +27,17 @@ interface TrackingData {
   summaryInsight: string;
 }
 
+interface HistoryItem {
+  text: string;
+  date: string;
+  co2eKg: number;
+}
+
 export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<TrackingData | null>(null);
-  const [history, setHistory] = useState<
-    Array<{ text: string; date: string; co2eKg: number }>
-  >([]);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [cumulativeTotal, setCumulativeTotal] = useState<number>(0);
   const [announcement, setAnnouncement] = useState("");
   const [completedChallenges, setCompletedChallenges] = useState<Record<string, boolean>>({});
 
@@ -50,18 +55,13 @@ export default function DashboardPage() {
       setCompletedChallenges({}); // Reset completed challenges on new tracking
 
       try {
-        // Combine session history to provide the backend with the user's full daily emissions profile
-        const sessionContext = history.length > 0
-          ? `Previous activities today: ${history.map(h => h.text).join(". ")}. New activity: ${activityString.trim()}`
-          : activityString.trim();
-
         const response = await fetch("/api/track", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            activityString: sessionContext,
+            activityString: activityString.trim(),
             profileContext: {
               dailyBaselineKg: dailyTarget,
             },
@@ -89,9 +89,10 @@ export default function DashboardPage() {
           const summary = trackingData.summary;
           setData(trackingData as TrackingData);
 
-          // Calculate the delta for this specific activity to keep the history log accurate
-          const previousTotal = data ? data.summary.totalCo2eKg : 0.0;
-          const activityFootprint = parseFloat((summary.totalCo2eKg - previousTotal).toFixed(2));
+          // Backend now processes the single activity isolated, so its total is the specific footprint
+          const activityFootprint = parseFloat(summary.totalCo2eKg.toFixed(2));
+          
+          setCumulativeTotal((prev) => prev + activityFootprint);
 
           // Add to local session history
           setHistory((prev) => [
@@ -106,15 +107,19 @@ export default function DashboardPage() {
             ...prev,
           ]);
 
-          const totalCO2 = summary.totalCo2eKg;
-          const statusMsg =
-            summary.status === "over_baseline"
-              ? `exceeds your daily target by ${summary.differenceKg} kilograms.`
-              : `keeps you under your daily target by ${Math.abs(summary.differenceKg)} kilograms.`;
+          // Use the latest cumulative total for the announcement
+          setCumulativeTotal((prevTotal) => {
+             const newDiff = prevTotal - dailyTarget;
+             const statusMsg =
+               newDiff > 0
+                 ? `exceeds your daily target by ${newDiff.toFixed(2)} kilograms.`
+                 : `keeps you under your daily target by ${Math.abs(newDiff).toFixed(2)} kilograms.`;
 
-          setAnnouncement(
-            `Analysis complete. Your activity emitted ${totalCO2} kilograms of CO2, which ${statusMsg} Challenges generated.`,
-          );
+             setAnnouncement(
+               `Analysis complete. Your activity emitted ${activityFootprint} kilograms of CO2. Your cumulative total ${statusMsg} Challenges generated.`,
+             );
+             return prevTotal;
+          });
         } else {
           throw new Error(result.message || "Malformed response from backend");
         }
@@ -127,7 +132,7 @@ export default function DashboardPage() {
         setIsLoading(false);
       }
     },
-    [dailyTarget, data, history],
+    [dailyTarget],
   );
 
   const handleToggleChallenge = useCallback((title: string) => {
@@ -148,7 +153,7 @@ export default function DashboardPage() {
   }
 
   // Compute values for stats cards
-  const baseTotal = data ? data.summary.totalCo2eKg : 0.0;
+  const baseTotal = cumulativeTotal;
   const displayTotal = Math.max(0, Number((baseTotal - totalSavings).toFixed(2)));
   const deviation = Number((displayTotal - dailyTarget).toFixed(2));
   const isOver = deviation > 0;

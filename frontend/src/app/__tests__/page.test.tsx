@@ -96,5 +96,8 @@ describe("DashboardPage regression", () => {
       expect(screen.getByText("Meatless Monday")).toBeInTheDocument();
     });
     expect(screen.queryByText("Take Public Transit")).not.toBeInTheDocument();
+
+    // Verify the cumulative footprint is correctly accumulated by the frontend (2.1 + 5.5 = 7.6)
+    expect(screen.getByText("7.6")).toBeInTheDocument();
   });
 });
