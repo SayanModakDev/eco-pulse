@@ -38,7 +38,7 @@ describe("InsightGrid Component", () => {
     render(<InsightGrid challenges={mockChallenges} />);
     expect(screen.getByText("Test Challenge 1")).toBeInTheDocument();
     expect(screen.getByText("Test Challenge 2")).toBeInTheDocument();
-    expect(screen.getByText("-5 kg CO₂e")).toBeInTheDocument();
+    expect(screen.getByText("-5 kg/day CO₂e")).toBeInTheDocument();
   });
 
   it("toggles challenge completion state on button click", () => {
