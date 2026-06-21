@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import { GoogleGenAI } from "@google/genai";
 import { EXTRACTION_AGENT_PROMPT, INSIGHTS_AGENT_PROMPT } from "./prompts.js";
 import { emissionFactorCache, resultCache } from "../utils/cache.js";
@@ -312,8 +313,9 @@ export async function orchestrateCarbonTracking({
   profileContext,
 }) {
   const baseline = profileContext?.dailyBaselineKg || 15.0;
-  const sanitized = activityString.trim().slice(0, 500).replace(/\s+/g, ' ');
-  const cacheKey = `track::${sanitized.substring(0, 120)}::${baseline}`;
+  const sanitized = activityString.trim().slice(0, 2000).replace(/\s+/g, ' ');
+  const hash = createHash('sha256').update(sanitized).digest('hex');
+  const cacheKey = `track::${hash}::${baseline}`;
   const cachedResult = resultCache.get(cacheKey);
   if (cachedResult) {
     return cachedResult;
