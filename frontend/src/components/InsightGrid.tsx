@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React from "react";
 
 export interface Challenge {
   title: string;
@@ -17,6 +17,8 @@ export interface Challenge {
 
 interface InsightGridProps {
   challenges: Challenge[];
+  completedChallenges: Record<string, boolean>;
+  onToggleChallenge: (title: string) => void;
 }
 
 /**
@@ -25,18 +27,7 @@ interface InsightGridProps {
  *
  * EFFICIENCY: Wrapped in React.memo and uses useCallback to prevent unnecessary re-renders.
  */
-const InsightGrid = React.memo(({ challenges }: InsightGridProps) => {
-  // Keep track of completed challenges locally to show interactive state
-  const [completedChallenges, setCompletedChallenges] = useState<
-    Record<string, boolean>
-  >({});
-
-  const toggleComplete = useCallback((title: string) => {
-    setCompletedChallenges((prev) => ({
-      ...prev,
-      [title]: !prev[title],
-    }));
-  }, []);
+const InsightGrid = React.memo(({ challenges, completedChallenges, onToggleChallenge }: InsightGridProps) => {
 
   if (challenges.length === 0) {
     return (
@@ -168,7 +159,7 @@ const InsightGrid = React.memo(({ challenges }: InsightGridProps) => {
                 </span>
 
                 <button
-                  onClick={() => toggleComplete(challenge.title)}
+                  onClick={() => onToggleChallenge(challenge.title)}
                   aria-pressed={isCompleted}
                   aria-label={`Mark "${challenge.title}" challenge as ${isCompleted ? "incomplete" : "complete"}`}
                   className={`px-4 py-2 text-xs font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900 cursor-pointer transition-all ${

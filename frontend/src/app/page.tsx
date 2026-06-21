@@ -34,6 +34,7 @@ export default function DashboardPage() {
     Array<{ text: string; date: string; co2eKg: number }>
   >([]);
   const [announcement, setAnnouncement] = useState("");
+  const [completedChallenges, setCompletedChallenges] = useState<Record<string, boolean>>({});
 
   // Default values before any submission
   const dailyTarget = 15.0;
@@ -46,6 +47,7 @@ export default function DashboardPage() {
     async (activityString: string) => {
       setIsLoading(true);
       setAnnouncement("Analyzing your activities for carbon emissions...");
+      setCompletedChallenges({}); // Reset completed challenges on new tracking
 
       try {
         // Combine session history to provide the backend with the user's full daily emissions profile
@@ -128,10 +130,28 @@ export default function DashboardPage() {
     [dailyTarget, data, history],
   );
 
+  const handleToggleChallenge = useCallback((title: string) => {
+    setCompletedChallenges((prev) => ({
+      ...prev,
+      [title]: !prev[title],
+    }));
+  }, []);
+
+  // Compute savings
+  let totalSavings = 0;
+  if (data) {
+    data.microChallenges.forEach((challenge) => {
+      if (completedChallenges[challenge.title]) {
+        totalSavings += challenge.estimatedCO2SavingsKg;
+      }
+    });
+  }
+
   // Compute values for stats cards
-  const displayTotal = data ? data.summary.totalCo2eKg : 0.0;
-  const deviation = data ? data.summary.differenceKg : 0.0;
-  const isOver = data ? data.summary.status === "over_baseline" : false;
+  const baseTotal = data ? data.summary.totalCo2eKg : 0.0;
+  const displayTotal = Math.max(0, Number((baseTotal - totalSavings).toFixed(2)));
+  const deviation = Number((displayTotal - dailyTarget).toFixed(2));
+  const isOver = deviation > 0;
   const progressPercent = Math.min((displayTotal / dailyTarget) * 100, 100);
 
   return (
@@ -303,7 +323,11 @@ export default function DashboardPage() {
                 {data.summaryInsight}
               </div>
             )}
-            <InsightGrid challenges={data?.microChallenges || []} />
+            <InsightGrid
+              challenges={data?.microChallenges || []}
+              completedChallenges={completedChallenges}
+              onToggleChallenge={handleToggleChallenge}
+            />
           </div>
 
           {/* Session history section */}
