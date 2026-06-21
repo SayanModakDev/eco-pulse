@@ -25,9 +25,7 @@ const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || "development";
 
 const log = {
-  // eslint-disable-next-line no-console
   info: (msg) => NODE_ENV === "development" && console.log(msg),
-  // eslint-disable-next-line no-console
   error: (msg, err) => NODE_ENV === "development" && console.error(msg, err),
 };
 

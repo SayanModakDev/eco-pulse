@@ -68,15 +68,11 @@ export default function DashboardPage() {
 
         const result: any = await response.json();
 
-        let parsedData: TrackingData | null = null;
-        if (result.success && result.data) {
-          parsedData = result.data;
-        } else if (result.activities || result.summary) {
-          parsedData = result as TrackingData;
-        }
+        // Support both wrapped {success, data} and direct result (backend flexibility)
+        const trackingData = result.success && result.data ? result.data : result;
 
-        if (parsedData) {
-          setData(parsedData);
+        if (trackingData.activities || trackingData.summary) {
+          setData(trackingData as TrackingData);
 
           // Add to local session history
           setHistory((prev) => [
@@ -86,16 +82,16 @@ export default function DashboardPage() {
                 hour: "2-digit",
                 minute: "2-digit",
               }),
-              co2eKg: parsedData!.summary.totalCo2eKg,
+              co2eKg: trackingData.summary.totalCo2eKg,
             },
             ...prev,
           ]);
 
-          const totalCO2 = parsedData.summary.totalCo2eKg;
+          const totalCO2 = trackingData.summary.totalCo2eKg;
           const statusMsg =
-            parsedData.summary.status === "over_baseline"
-              ? `exceeds your daily target by ${parsedData.summary.differenceKg} kilograms.`
-              : `keeps you under your daily target by ${Math.abs(parsedData.summary.differenceKg)} kilograms.`;
+            trackingData.summary.status === "over_baseline"
+              ? `exceeds your daily target by ${trackingData.summary.differenceKg} kilograms.`
+              : `keeps you under your daily target by ${Math.abs(trackingData.summary.differenceKg)} kilograms.`;
 
           setAnnouncement(
             `Analysis complete. Your activity emitted ${totalCO2} kilograms of CO2, which ${statusMsg} Challenges generated.`,

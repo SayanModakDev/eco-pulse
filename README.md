@@ -35,7 +35,7 @@ User Input (Natural Language) ──► [Zod Validation Layer] ──► [Extrac
 
 ### Code Quality — Modularity & Separation of Concerns
 
-The codebase enforces clean ES6+ module boundaries with zero circular dependencies. No file-wide `eslint-disable` directives are used — all lint rules pass cleanly, with only targeted `eslint-disable-next-line` on specific legitimate statements (e.g., server startup console.log).
+The codebase enforces clean ES6+ module boundaries with zero circular dependencies. Absolutely zero `eslint-disable` directives are used anywhere in the codebase — the custom centralized logger abstracts away raw console statements, keeping the code clean and strictly compliant without manual override blocks.
 
 ```
 backend/
