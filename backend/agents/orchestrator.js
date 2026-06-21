@@ -24,6 +24,19 @@ import { EMISSION_FACTORS } from "../utils/constants.js";
 
 const isDev = process.env.NODE_ENV === "development";
 
+/**
+ * Dev-only diagnostic logger for the agent pipeline.
+ * Intentionally silent in production; the single eslint-disable here
+ * scopes the no-console exception to this module instead of repeating
+ * eslint-disable-next-line at every call site.
+ */
+/* eslint-disable no-console */
+const log = {
+  info: (msg) => isDev && console.log(msg),
+  error: (msg) => isDev && console.error(msg),
+};
+/* eslint-enable no-console */
+
 /** Initialize the Google Gen AI client if API key is available. */
 const ai = process.env.GEMINI_API_KEY
   ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
@@ -106,8 +119,7 @@ const INSIGHTS_SCHEMA = {
 async function runExtractionAgent(activityString) {
   if (ai) {
     try {
-      // eslint-disable-next-line no-console
-      if (isDev) console.log("[Agent 1] LLM Extraction...");
+      log.info("[Agent 1] LLM Extraction...");
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: `Extract activities from: "${activityString}"`,
@@ -124,8 +136,7 @@ async function runExtractionAgent(activityString) {
         return Array.isArray(parsed.activities) ? parsed.activities : [];
       }
     } catch (err) {
-      // eslint-disable-next-line no-console
-      if (isDev) console.error("[Agent 1] LLM failed:", err.message);
+      log.error(`[Agent 1] LLM failed: ${err.message}`);
     }
   }
 
@@ -248,8 +259,7 @@ async function runInsightsAgent(calculationResults) {
         }
       }
     } catch (err) {
-      // eslint-disable-next-line no-console
-      if (isDev) console.error("[Agent 3] LLM failed:", err.message);
+      log.error(`[Agent 3] LLM failed: ${err.message}`);
     }
   }
 

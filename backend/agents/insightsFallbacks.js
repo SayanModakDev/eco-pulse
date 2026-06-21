@@ -7,7 +7,7 @@ export const defaultChallenges = {
     {
       title: "Try a Meatless Monday",
       description:
-        "Substitute beef or pork in your next meal with lentils, beans, or a plant-based burger. This single swap can dramatically lower your meal's greenhouse gas footprint.",
+        "Based on your recent beef consumption, substitute with lentils or a plant-based option in your next meal for major savings.",
       potentialSavingKg: 4.8,
       difficulty: "easy",
       category: "food",

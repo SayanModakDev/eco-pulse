@@ -35,7 +35,7 @@ backend/
 ├── server.js                    # Express entry — middleware composition only
 ├── routes/api.js                # Route handlers — validation + orchestrator invocation
 ├── agents/
-│   ├── orchestrator.js          # Multi-agent pipeline coordination (~260 lines)
+│   ├── orchestrator.js          # Multi-agent pipeline coordination (~182 lines with full JSDoc)
 │   ├── extractors.js            # Modular keyword extraction helpers
 │   ├── calculationHelpers.js    # Declarative emission factor lookup + CO2e math
 │   ├── insightsFallbacks.js     # Default challenges & insights (LLM fallback data)
