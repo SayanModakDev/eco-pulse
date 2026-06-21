@@ -22,14 +22,10 @@ import { EMISSION_FACTORS } from "../utils/constants.js";
  * and leverages local memory caching for efficiency.
  */
 
-const isDev = process.env.NODE_ENV === "development";
-
 /**
- * Dev-only diagnostic logger for the agent pipeline.
- * Intentionally silent in production; the single eslint-disable here
- * scopes the no-console exception to this module instead of repeating
- * eslint-disable-next-line at every call site.
+ * Centralized dev-only logger. Keeps no-console rule clean and scoped.
  */
+const isDev = process.env.NODE_ENV === "development";
 /* eslint-disable no-console */
 const log = {
   info: (msg) => isDev && console.log(msg),
