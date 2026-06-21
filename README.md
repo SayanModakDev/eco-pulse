@@ -53,7 +53,7 @@ backend/
 │   ├── constants.js             # Extracted keywords, factors, rate limits
 │   └── cache.js                 # Generic MemoryCache class + singletons
 └── tests/
-    ├── agent.test.js            # 43 unit tests across 7 suites
+    ├── agent.test.js            # 44 unit tests across 7 suites
     └── verify-outputs.js        # 15 structured output + challenge quality tests
 
 frontend/
@@ -180,7 +180,11 @@ npm test
 ### 6. Lint & Format
 
 ```bash
+# Backend
 cd backend && npm run lint && npm run format
+
+# Frontend
+cd ../frontend && npm run lint && npm run format
 ```
 
 ---
