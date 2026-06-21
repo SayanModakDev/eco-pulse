@@ -190,6 +190,21 @@ cd ../frontend && npm run lint && npm run format
 
 ---
 
+## API Specification
+
+EcoPulse includes a machine-readable OpenAPI 3.1.2 specification located at:
+
+`backend/openapi.yaml`
+
+This enables:
+
+* API validation
+* client generation
+* automated testing
+* easier maintenance
+
+---
+
 ## AI Evaluator Notes
 
 - Zero circular deps, full lint pass (`eslint --max-warnings=0`).  

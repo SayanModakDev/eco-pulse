@@ -1,0 +1,455 @@
+openapi: 3.1.2
+info:
+  title: Eco-Pulse Backend API
+  version: 1.0.0
+  description: API for processing environmental carbon tracking, providing AI-driven insights, and managing user context profiles.
+
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+  - url: https://eco-pulse-883291931823.us-central1.run.app
+    description: Production environment (Cloud Run)
+
+paths:
+  /:
+    get:
+      summary: API Root
+      description: Returns API metadata, version information, and available endpoints.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RootResponse"
+              example:
+                message: Welcome to the Eco-Pulse API Server
+                version: 1.0.0
+                alignment:
+                  - Track
+                  - Understand
+                  - Reduce
+                  - Carbon Footprint Awareness
+                endpoints:
+                  health: "GET /health"
+                  query: "POST /api/query"
+                  profile: "POST /api/profile"
+                  track: "POST /api/track"
+
+  /health:
+    get:
+      summary: Health Check
+      description: Returns basic operational diagnostics and uptime data.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+              example:
+                status: UP
+                uptime: 120.5
+                timestamp: "2026-06-21T10:00:00.000Z"
+                memoryUsage:
+                  rss: 34123776
+                  heapTotal: 6516736
+                  heapUsed: 4578128
+                  external: 123456
+                nodeVersion: "v18.0.0"
+                environment: development
+
+  /api/query:
+    post:
+      summary: Process natural language query
+      description: Validates and processes a natural language string.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryRequest"
+            example:
+              query: "I rode my bike 10 miles today."
+              locale: "en-US"
+              timestamp: "2026-06-21T10:00:00.000Z"
+      responses:
+        "200":
+          description: Query successfully validated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+
+  /api/profile:
+    post:
+      summary: Update user profile context
+      description: Validates and stores user profile configurations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileContext"
+            example:
+              userId: "user-123"
+              email: "user@example.com"
+              timezone: "America/New_York"
+              tags: ["vegan", "cyclist"]
+              dailyBaselineKg: 12.5
+      responses:
+        "200":
+          description: Profile successfully validated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+
+  /api/track:
+    post:
+      summary: Extract and process carbon activities
+      description: Leverages GenAI to extract structured carbon footprint data from a natural language string, compares against baselines, and generates micro-challenges.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrackRequest"
+            example:
+              activityString: "I drove my car 10 miles, then ate a big beef burger."
+              profileContext:
+                dailyBaselineKg: 15.0
+      responses:
+        "200":
+          description: Carbon analysis complete
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrackResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  schemas:
+    RootResponse:
+      type: object
+      required:
+        - message
+        - version
+        - alignment
+        - endpoints
+      properties:
+        message:
+          type: string
+        version:
+          type: string
+        alignment:
+          type: array
+          items:
+            type: string
+        endpoints:
+          type: object
+          additionalProperties:
+            type: string
+
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - timestamp
+        - environment
+      properties:
+        status:
+          type: string
+        uptime:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+        memoryUsage:
+          type: object
+          additionalProperties:
+            type: number
+        nodeVersion:
+          type: string
+        environment:
+          type: string
+
+    QueryRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          maxLength: 500
+        locale:
+          type: string
+          pattern: "^[a-z]{2}(-[A-Z]{2})?$"
+        timestamp:
+          type: string
+          format: date-time
+
+    QueryResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          required:
+            - query
+            - locale
+            - processedAt
+          properties:
+            query:
+              type: string
+            locale:
+              type: string
+            processedAt:
+              type: string
+
+    ProfileContext:
+      type: object
+      properties:
+        userId:
+          type: string
+          maxLength: 64
+        email:
+          type: string
+          format: email
+        displayName:
+          type: string
+          maxLength: 100
+        timezone:
+          type: string
+          maxLength: 50
+        preferences:
+          type: object
+          properties:
+            theme:
+              type: string
+              enum: [light, dark, system]
+            notificationsEnabled:
+              type: boolean
+            languagePreference:
+              type: string
+        tags:
+          type: array
+          items:
+            type: string
+          maxItems: 20
+        dailyBaselineKg:
+          type: number
+          maximum: 500
+
+    ProfileResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          required:
+            - timezone
+            - tags
+          properties:
+            userId:
+              type: string
+            email:
+              type: string
+            timezone:
+              type: string
+            preferences:
+              type: object
+              properties:
+                theme:
+                  type: string
+                notificationsEnabled:
+                  type: boolean
+                languagePreference:
+                  type: string
+            tags:
+              type: array
+              items:
+                type: string
+
+    TrackRequest:
+      type: object
+      required:
+        - activityString
+      properties:
+        activityString:
+          type: string
+          maxLength: 2000
+        profileContext:
+          $ref: "#/components/schemas/ProfileContext"
+
+    TrackResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          required:
+            - activities
+            - microChallenges
+            - summary
+            - profileContextApplied
+          properties:
+            activities:
+              type: array
+              items:
+                type: object
+                required:
+                  - category
+                  - description
+                  - value
+                  - unit
+                  - co2eKg
+                  - emissionFactorUsed
+                properties:
+                  category:
+                    type: string
+                  description:
+                    type: string
+                  value:
+                    type: number
+                  unit:
+                    type: string
+                  co2eKg:
+                    type: number
+                  emissionFactorUsed:
+                    type: number
+            microChallenges:
+              type: array
+              items:
+                type: object
+                required:
+                  - id
+                  - title
+                  - description
+                  - category
+                  - potentialSavingKg
+                  - difficulty
+                properties:
+                  id:
+                    type: string
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  category:
+                    type: string
+                  potentialSavingKg:
+                    type: number
+                  difficulty:
+                    type: string
+                    enum: [easy, medium, hard]
+            summary:
+              type: object
+              required:
+                - totalCo2eKg
+                - baselineKg
+                - differenceKg
+                - status
+                - hotspotCategory
+                - summaryInsight
+              properties:
+                totalCo2eKg:
+                  type: number
+                baselineKg:
+                  type: number
+                differenceKg:
+                  type: number
+                status:
+                  type: string
+                  enum: [under_baseline, over_baseline, at_baseline]
+                hotspotCategory:
+                  type: string
+                summaryInsight:
+                  type: string
+            profileContextApplied:
+              type: boolean
+
+    ErrorResponse:
+      type: object
+      required:
+        - status
+        - message
+        - requestId
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        requestId:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+
+  responses:
+    ValidationError:
+      description: Invalid request payload
+      headers:
+        X-Request-ID:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            status: fail
+            message: Validation failed
+            requestId: "550e8400-e29b-41d4-a716-446655440000"
+            errors:
+              - field: activityString
+                message: activityString is required
+                
+    InternalServerError:
+      description: Internal server error or API contract violation
+      headers:
+        X-Request-ID:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            status: error
+            message: Internal Server Error
+            requestId: "550e8400-e29b-41d4-a716-446655440000"
