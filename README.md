@@ -16,22 +16,43 @@ An intelligent, context-aware carbon footprint management system built specifica
 
 The application splits computational responsibilities between an accessible, highly performant client-side UI and an intelligent, secure server-side orchestration layer.
 
-```text
-User Input (Natural Language) ──► [Zod Validation Layer] ──► [Extraction Agent]
-                                                                     │
-[Actionable Insights UI] ◄── [Mitigation Agent] ◄── [Calculation Agent] ◄┘
+```mermaid
+graph TD
+    A["👤 User"] -->|Natural Language Input| B["🛡️ Validation Layer (Zod)"]
+    B -->|Validated Payload| C["🧠 AI Processing (Extraction Agent)"]
+    C -->|Structured JSON| D["⚙️ Emission Engine (Calculation Agent)"]
+    D -->|CO₂e & Hotspots| E["💡 Recommendation Engine (Insights Agent)"]
+    E -->|Challenges & Projections| F["📊 Dashboard UI"]
+    
+    classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#fff;
+    classDef user fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#fff;
+    class A,F user;
 ```
 
 ---
 
 ## Alignment with Rubric Metrics
 
-### Problem Statement Alignment
-- **Track**: Natural language `activityString` + Zod + extraction agent.  
-- **Understand**: Deterministic calculation + visual metrics/hotspot in UI.  
-- **Reduce**: Personalized micro-challenges targeting hotspot via insights agent.  
-- Live demos: [Frontend](https://eco-pulse-883291931823.us-central1.run.app) | [Backend Health](https://eco-pulse-backend-883291931823.us-central1.run.app/health).  
-- All rubric pillars explicitly addressed in architecture diagram and code comments.
+### How EcoPulse Solves the Challenge
+
+EcoPulse explicitly addresses the three core pillars of the Carbon Footprint Awareness Platform challenge through a robust, full-stack pipeline.
+
+#### 1. Track: Zero-Friction Data Logging
+*   **Feature:** Natural language processing allows users to log multiple complex activities (e.g., "Drove 10km and ate a burger") in a single unstructured string.
+*   **Implementation:** The UI's `<ActionTracker />` (`frontend/src/components/ActionTracker.tsx`) sends the `activityString` to the `POST /api/track` endpoint. The backend validates it with Zod (`backend/utils/validators.js`) and routes it to the Extraction Agent (`backend/agents/orchestrator.js`), which parses the text into structured JSON arrays of activities across 5 core categories.
+*   **Outcome:** Reduces tracking friction compared to manual form entry, increasing user engagement and data accuracy.
+
+#### 2. Understand: Contextual Carbon Analytics
+*   **Feature:** Real-time translation of activities into quantifiable CO₂e emissions, measured against a daily baseline limit.
+*   **Implementation:** The Deterministic Calculation Agent (`backend/agents/calculationHelpers.js`) uses an in-memory cached emission factor lookup table to compute `co2eKg` in sub-milliseconds without LLM hallucination risks. The frontend Dashboard (`frontend/src/app/page.tsx`) visually represents the total footprint, deviation from target, and status ("over_baseline" / "under_baseline") using an accessible progress bar.
+*   **Outcome:** Provides immediate, scientifically grounded feedback on the user's environmental impact with 100% mathematical consistency.
+
+#### 3. Reduce: Actionable, Measurable Micro-Challenges
+*   **Feature:** Hyper-personalized, category-specific mitigation challenges generated based on the user's highest emission "hotspot" (e.g., food, transport).
+*   **Implementation:** The Insights Agent (`backend/agents/orchestrator.js`) generates dynamic `microChallenges` mapped to the hotspot category. Each challenge includes a specific `estimatedCO2SavingsKg` metric, which is then deterministically extrapolated into weekly, monthly, and annual projections. The `<InsightGrid />` (`frontend/src/components/InsightGrid.tsx`) prominently displays these savings projections.
+*   **Outcome:** Empowers users with clear, actionable steps that provide transparent, mathematically sound projections of long-term carbon footprint reduction.
+
+Live demos: [Frontend](https://eco-pulse-883291931823.us-central1.run.app) | [Backend Health](https://eco-pulse-backend-883291931823.us-central1.run.app/health).
 
 ### Code Quality — Modularity & Separation of Concerns
 
