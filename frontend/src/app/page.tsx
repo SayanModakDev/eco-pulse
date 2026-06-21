@@ -48,13 +48,18 @@ export default function DashboardPage() {
       setAnnouncement("Analyzing your activities for carbon emissions...");
 
       try {
+        // Combine session history to provide the backend with the user's full daily emissions profile
+        const sessionContext = history.length > 0
+          ? `Previous activities today: ${history.map(h => h.text).join(". ")}. New activity: ${activityString.trim()}`
+          : activityString.trim();
+
         const response = await fetch("/api/track", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            activityString: activityString.trim(),
+            activityString: sessionContext,
             profileContext: {
               dailyBaselineKg: dailyTarget,
             },
@@ -82,6 +87,10 @@ export default function DashboardPage() {
           const summary = trackingData.summary;
           setData(trackingData as TrackingData);
 
+          // Calculate the delta for this specific activity to keep the history log accurate
+          const previousTotal = data ? data.summary.totalCo2eKg : 0.0;
+          const activityFootprint = parseFloat((summary.totalCo2eKg - previousTotal).toFixed(2));
+
           // Add to local session history
           setHistory((prev) => [
             {
@@ -90,7 +99,7 @@ export default function DashboardPage() {
                 hour: "2-digit",
                 minute: "2-digit",
               }),
-              co2eKg: summary.totalCo2eKg,
+              co2eKg: activityFootprint,
             },
             ...prev,
           ]);
@@ -116,7 +125,7 @@ export default function DashboardPage() {
         setIsLoading(false);
       }
     },
-    [dailyTarget],
+    [dailyTarget, data, history],
   );
 
   // Compute values for stats cards
