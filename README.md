@@ -73,14 +73,14 @@ Each layer has a single responsibility: `server.js` composes middleware, `api.js
 
 ### Efficiency — Lightweight Runtime Footprint
 
-- **7 production dependencies** in the backend — no bloat frameworks.
+- **10 production dependencies** in the backend — no bloat frameworks.
 - **In-memory LRU cache** (`utils/cache.js`) eliminates redundant emission factor computations and deduplicates identical orchestration requests with TTL-based expiry.
 - **Agent 2 (Calculation) is fully deterministic** — no LLM call required for emission factor mapping, ensuring sub-millisecond computation per activity.
 - **Repository size is well under 10 MB** excluding `node_modules`.
 
 ### Testing — Comprehensive Coverage
 
-58 unit tests across 9 suites using Node's **native test runner** (`node:test`) — zero additional test framework dependencies:
+58 backend unit tests across 9 suites (Node's native `node:test` runner) plus 5 frontend component tests across 2 suites — 63 tests total, zero additional test framework dependencies beyond Jest for the frontend:
 
 | Suite | Tests | What It Validates |
 |---|---|---|
@@ -93,6 +93,7 @@ Each layer has a single responsibility: `server.js` composes middleware, `api.js
 | `Structured Output Schema Verification` | 8 | Full JSON schema compliance across 8 diverse scenarios |
 | `Challenge Quality Assessment` | 7 | Hotspot-targeted challenges, distinct titles, realistic savings, coherent insights, CO2e math consistency |
 | Frontend `ActionTracker` | 2 | Accessible rendering, loading state, ARIA compliance |
+| Frontend `InsightGrid` | 3 | Empty-state rendering, challenge card content, completion-toggle interaction with `aria-pressed` state changes |
 
 Run the full suite:
 ```bash
