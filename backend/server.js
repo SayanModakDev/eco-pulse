@@ -7,8 +7,12 @@ import dotenv from "dotenv";
 import {
   naturalLanguageInputSchema,
   profileContextSchema,
+  rootResponseSchema,
+  healthResponseSchema,
+  queryResponseSchema,
+  profileResponseSchema,
 } from "./utils/validators.js";
-import { validateRequestBody } from "./utils/middleware.js";
+import { validateRequestBody, sendValidatedResponse } from "./utils/middleware.js";
 import {
   RATE_LIMIT_WINDOW_MS,
   RATE_LIMIT_MAX_REQUESTS,
@@ -104,7 +108,7 @@ app.use(globalLimiter);
 // 6. Routes
 
 app.get("/", (req, res) => {
-  res.status(200).json({
+  const payload = {
     message: "Welcome to the Eco-Pulse API Server",
     version: "1.0.0",
     alignment: ["Track", "Understand", "Reduce", "Carbon Footprint Awareness"],
@@ -114,17 +118,19 @@ app.get("/", (req, res) => {
       profile: "POST /api/profile",
       track: "POST /api/track",
     },
-  });
+  };
+  return sendValidatedResponse(req, res, rootResponseSchema, payload);
 });
 
 app.use("/api", apiRouter);
 
 app.get("/health", (req, res) => {
-  res.status(200).json({
+  const payload = {
     status: "UP",
     timestamp: new Date().toISOString(),
     environment: NODE_ENV,
-  });
+  };
+  return sendValidatedResponse(req, res, healthResponseSchema, payload);
 });
 
 app.post(
@@ -132,7 +138,7 @@ app.post(
   validateRequestBody(naturalLanguageInputSchema),
   (req, res) => {
     const { query, locale, timestamp } = req.body;
-    res.status(200).json({
+    const payload = {
       success: true,
       message: "Query validation successful",
       data: {
@@ -140,7 +146,8 @@ app.post(
         locale: locale || "not provided",
         processedAt: timestamp || new Date().toISOString(),
       },
-    });
+    };
+    return sendValidatedResponse(req, res, queryResponseSchema, payload);
   },
 );
 
@@ -149,7 +156,7 @@ app.post(
   validateRequestBody(profileContextSchema),
   (req, res) => {
     const { userId, email, timezone, preferences, tags } = req.body;
-    res.status(200).json({
+    const payload = {
       success: true,
       message: "Profile context validation successful",
       data: {
@@ -159,7 +166,8 @@ app.post(
         preferences,
         tags: tags || [],
       },
-    });
+    };
+    return sendValidatedResponse(req, res, profileResponseSchema, payload);
   },
 );
 

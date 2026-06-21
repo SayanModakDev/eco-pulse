@@ -113,3 +113,82 @@ export const trackRequestSchema = z.object({
 });
 
 export const sanitizeInput = (str) => str.replace(/[<>"'&]/g, "").trim();
+
+// ── API Response Schemas ──────────────────────────────────────────────────
+
+export const rootResponseSchema = z.object({
+  message: z.string(),
+  version: z.string(),
+  alignment: z.array(z.string()),
+  endpoints: z.record(z.string()),
+});
+
+export const healthResponseSchema = z.object({
+  status: z.string(),
+  timestamp: z.string(),
+  environment: z.string(),
+});
+
+export const queryResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: z.object({
+    query: z.string(),
+    locale: z.string(),
+    processedAt: z.string(),
+  }),
+});
+
+export const profileResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: z.object({
+    userId: z.string().optional(),
+    email: z.string().optional(),
+    timezone: z.string(),
+    preferences: z.object({
+      theme: z.string().optional(),
+      notificationsEnabled: z.boolean().optional(),
+      languagePreference: z.string().optional(),
+    }).optional(),
+    tags: z.array(z.string()),
+  }),
+});
+
+const activitySchema = z.object({
+  category: z.string(),
+  description: z.string(),
+  value: z.number(),
+  unit: z.string(),
+  co2eKg: z.number(),
+  emissionFactorUsed: z.number(),
+});
+
+const microChallengeSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  category: z.string(),
+  potentialSavingKg: z.number(),
+  difficulty: z.enum(["easy", "medium", "hard"]),
+});
+
+const summarySchema = z.object({
+  totalCo2eKg: z.number(),
+  baselineKg: z.number(),
+  differenceKg: z.number(),
+  status: z.enum(["under_baseline", "over_baseline", "at_baseline"]),
+  hotspotCategory: z.string(),
+  summaryInsight: z.string(),
+});
+
+export const trackResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: z.object({
+    activities: z.array(activitySchema),
+    microChallenges: z.array(microChallengeSchema),
+    summary: summarySchema,
+    profileContextApplied: z.boolean(),
+  }),
+});

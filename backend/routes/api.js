@@ -1,6 +1,6 @@
 import express from "express";
-import { validateRequestBody } from "../utils/middleware.js";
-import { trackRequestSchema, sanitizePromptInput } from "../utils/validators.js";
+import { validateRequestBody, sendValidatedResponse } from "../utils/middleware.js";
+import { trackRequestSchema, trackResponseSchema, sanitizePromptInput } from "../utils/validators.js";
 import { orchestrateCarbonTracking } from "../agents/orchestrator.js";
 import { logRequestToGCP } from "../utils/gcp.js";
 
@@ -30,11 +30,13 @@ router.post(
         profileContext
       );
 
-      res.status(200).json({
+      const payload = {
         success: true,
         message: "Carbon analysis completed successfully",
         data: result,
-      });
+      };
+
+      return sendValidatedResponse(req, res, trackResponseSchema, payload);
     } catch (error) {
       next(error);
     }
