@@ -1,4 +1,5 @@
 import express from "express";
+import crypto from "crypto";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -75,11 +76,18 @@ app.use(
   }),
 );
 
-// 3. Request Parsers — limit body size to mitigate DoS
+// 3. Request Tracing
+app.use((req, res, next) => {
+  req.requestId = crypto.randomUUID();
+  res.setHeader("X-Request-ID", req.requestId);
+  next();
+});
+
+// 4. Request Parsers — limit body size to mitigate DoS
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 
-// 4. Rate Limiting
+// 5. Rate Limiting
 const globalLimiter = rateLimit({
   windowMs: RATE_LIMIT_WINDOW_MS,
   max: RATE_LIMIT_MAX_REQUESTS,
@@ -93,7 +101,7 @@ const globalLimiter = rateLimit({
 });
 app.use(globalLimiter);
 
-// 5. Routes
+// 6. Routes
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -159,10 +167,11 @@ app.use("*", (req, res) => {
   res.status(404).json({
     status: 404,
     message: "Resource not found",
+    requestId: req.requestId,
   });
 });
 
-// 6. Global Error-Handling Middleware
+// 7. Global Error-Handling Middleware
 app.use((err, req, res, next) => {
   if (err.name === "ZodError" || err.issues) {
     const fieldErrors = err.issues.map((issue) => ({
@@ -173,6 +182,7 @@ app.use((err, req, res, next) => {
       status: "fail",
       message: "Validation failed",
       errors: fieldErrors,
+      requestId: req.requestId,
     });
   }
 
@@ -180,6 +190,7 @@ app.use((err, req, res, next) => {
     return res.status(403).json({
       status: "fail",
       message: err.message,
+      requestId: req.requestId,
     });
   }
 
@@ -187,14 +198,16 @@ app.use((err, req, res, next) => {
     return res.status(400).json({
       status: "fail",
       message: "Malformed JSON request body",
+      requestId: req.requestId,
     });
   }
 
-  log.error(`[Error] [${new Date().toISOString()}]:`, err);
+  log.error(`[Error] [${req.requestId}] [${new Date().toISOString()}]:`, err);
 
   res.status(err.status || 500).json({
     status: "error",
     message: NODE_ENV === "development" ? err.message : "Internal server error",
+    requestId: req.requestId,
     ...(NODE_ENV === "development" && { stack: err.stack }),
   });
 });
@@ -204,7 +217,7 @@ const server = app.listen(PORT, () => {
   log.info(`Server running in ${NODE_ENV} mode on port ${PORT}`);
 });
 
-// 7. Graceful Shutdown
+// 8. Graceful Shutdown
 const gracefulShutdown = (signal) => {
   log.info(`Received ${signal}. Shutting down gracefully...`);
   server.close(() => {
