@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export const sanitizePromptInput = (str) => str.trim().replace(/[<>"'\\]/g, '').slice(0, 2000);
+
 /**
  * Schema to validate user natural language inputs.
  * Ensures the payload contains a clean query string and optional language/locale context.

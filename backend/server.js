@@ -41,7 +41,7 @@ app.use(
         imgSrc: ["'self'", "data:"],
       },
     },
-    hsts: { maxAge: 31536000, includeSubDomains: true },
+    hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
   }),
 );
 

@@ -11,12 +11,14 @@ const nextConfig = {
     root: __dirname,
   },
   async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "http://localhost:5000/api/:path*",
-      }, // dev
-    ];
+    return process.env.NODE_ENV === "development"
+      ? [
+          {
+            source: "/api/track",
+            destination: "http://localhost:5000/api/track",
+          },
+        ]
+      : [];
   },
 };
 

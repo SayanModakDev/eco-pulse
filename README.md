@@ -87,14 +87,14 @@ Each layer has a single responsibility: `server.js` composes middleware, `api.js
 
 ### Testing — Comprehensive Coverage
 
-59 backend unit tests across 9 suites (Node's native `node:test` runner) plus 5 frontend component tests across 2 suites — 64 tests total, zero additional test framework dependencies beyond Jest for the frontend:
+60 backend unit tests across 9 suites (Node's native `node:test` runner) plus 5 frontend component tests across 2 suites — 65 tests total, zero additional test framework dependencies beyond Jest for the frontend:
 
 | Suite | Tests | What It Validates |
 |---|---|---|
 | `naturalLanguageInputSchema` | 7 | Empty strings, oversized queries, type coercion, locale regex, whitespace trimming |
 | `trackRequestSchema` | 6 | Missing fields, length overflow, whitespace-only inputs, XSS character pass-through |
 | `profileContextSchema` | 4 | Invalid emails, negative baselines, tag array limits, default preference injection |
-| `Agent Orchestrator Pipeline` | 18 | End-to-end flow, multi-category extraction, zero-emission activities, hotspot detection, decimal parsing, emoji handling, graceful LLM fallback |
+| `Agent Orchestrator Pipeline` | 19 | End-to-end flow, multi-category extraction, zero-emission activities, hotspot detection, decimal parsing, emoji handling, graceful LLM fallback, cache shortening |
 | `MemoryCache Utility` | 8 | TTL expiry, LRU eviction, CRUD operations, stats reporting |
 | `emissionFactorCache singleton` | 1 | Instance type and TTL configuration |
 | `Structured Output Schema Verification` | 8 | Full JSON schema compliance across 8 diverse scenarios |

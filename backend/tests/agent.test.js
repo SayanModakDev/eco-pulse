@@ -474,6 +474,12 @@ describe("Agent Orchestrator Pipeline", () => {
     assert.ok(result.microChallenges.length > 0);
     assert.ok(result.summaryInsight);
   });
+
+  it("orchestrator handles long input with cache shortening", async () => {
+    const longInput = "a".repeat(1000) + " walked 5km and ate a burger";
+    const result = await orchestrateCarbonTracking({ activityString: longInput });
+    assert.ok(result);
+  });
 });
 
 // ─── Memory Cache Tests ──────────────────────────────────────────────────────

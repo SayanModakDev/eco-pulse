@@ -15,7 +15,7 @@ import {
   defaultSummaryInsights,
 } from "./insightsFallbacks.js";
 import { EMISSION_FACTORS } from "../utils/constants.js";
-import { sanitizeInput } from "../utils/validators.js";
+import { sanitizePromptInput } from "../utils/validators.js";
 
 /**
  * @fileoverview Multi-Agent Orchestration Layer
@@ -26,12 +26,12 @@ import { sanitizeInput } from "../utils/validators.js";
 /**
  * Centralized dev-only logger. Keeps no-console rule clean and scoped.
  */
-const isDev = process.env.NODE_ENV === "development";
+
 const log = {
   // eslint-disable-next-line no-console
-  info: (msg) => isDev && console.log(msg),
+  info: (msg) => process.env.NODE_ENV === "development" && console.log(msg),
   // eslint-disable-next-line no-console
-  error: (msg) => isDev && console.error(msg),
+  error: (msg) => process.env.NODE_ENV === "development" && console.error(msg),
 };
 
 /** Initialize the Google Gen AI client if API key is available. */
@@ -114,12 +114,13 @@ const INSIGHTS_SCHEMA = {
  * @returns {Promise<Array<{category: string, value: number, unit: string, description: string}>>}
  */
 async function runExtractionAgent(activityString) {
+  const safeActivity = sanitizePromptInput(activityString);
   if (ai) {
     try {
       log.info("[Agent 1] LLM Extraction...");
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
-        contents: `Extract activities from: "${activityString}"`,
+        contents: `Extract activities from: "${safeActivity}"`,
         config: {
           systemInstruction: EXTRACTION_AGENT_PROMPT,
           responseMimeType: "application/json",
@@ -285,14 +286,14 @@ export async function orchestrateCarbonTracking({
   profileContext,
 }) {
   const baseline = profileContext?.dailyBaselineKg || 15.0;
-  const sanitizedActivity = sanitizeInput(activityString).slice(0, 2000);
-  const cacheKey = `track::${sanitizedActivity.substring(0, 100)}::${baseline}`;
+  const sanitized = activityString.trim().slice(0, 500).replace(/\s+/g, ' ');
+  const cacheKey = `track::${sanitized.substring(0, 120)}::${baseline}`;
   const cachedResult = resultCache.get(cacheKey);
   if (cachedResult) {
     return cachedResult;
   }
 
-  const extractedActivities = await runExtractionAgent(sanitizedActivity);
+  const extractedActivities = await runExtractionAgent(activityString);
   const calculations = runCalculationAgent(
     extractedActivities,
     profileContext || {},
