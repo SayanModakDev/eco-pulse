@@ -12,7 +12,7 @@ import {
 } from "./extractors.js";
 import { processActivity } from "./calculationHelpers.js";
 import {
-  defaultChallenges,
+  generateFallbackChallenges,
   defaultSummaryInsights,
 } from "./insightsFallbacks.js";
 import { EMISSION_FACTORS } from "../utils/constants.js";
@@ -219,15 +219,20 @@ function runCalculationAgent(activities, profileContext = {}) {
  * Generates hyper-personalized micro-challenges targeting the primary hotspot.
  *
  * @param {Object} calculationResults - The output from Agent 2.
+ * @param {string} rawInput - The original user input for context.
  * @returns {Promise<{microChallenges: Array<Object>, summaryInsight: string}>}
  */
-async function runInsightsAgent(calculationResults) {
+async function runInsightsAgent(calculationResults, rawInput) {
   const hotspot = calculationResults.summary.hotspot;
   const hotspotCategory = hotspot ? hotspot.category : "other";
 
   if (ai) {
     try {
-      const calcJson = JSON.stringify(calculationResults);
+      const contextPayload = {
+        rawInput,
+        ...calculationResults
+      };
+      const calcJson = JSON.stringify(contextPayload);
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: [
@@ -275,7 +280,7 @@ async function runInsightsAgent(calculationResults) {
   }
 
   // Deterministic fallback from insightsFallbacks.js
-  const fallbackList = defaultChallenges[hotspotCategory] || defaultChallenges.other;
+  const fallbackList = generateFallbackChallenges(hotspot, rawInput);
   const challengesWithProjections = fallbackList.map((mc, idx) => {
     const savings = mc.estimatedCO2SavingsKg || mc.potentialSavingKg || 0;
     return {
@@ -326,7 +331,7 @@ export async function orchestrateCarbonTracking({
     extractedActivities,
     profileContext || {},
   );
-  const insights = await runInsightsAgent(calculations);
+  const insights = await runInsightsAgent(calculations, activityString);
 
   const result = {
     rawInput: activityString,

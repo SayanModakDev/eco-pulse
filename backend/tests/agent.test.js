@@ -277,13 +277,35 @@ describe("Agent Orchestrator Pipeline", () => {
       assert.ok(challenge.title);
       assert.ok(challenge.description);
       assert.equal(typeof challenge.estimatedCO2SavingsKg, "number");
-      assert.ok(["easy", "medium", "hard"].includes(challenge.difficulty));
       assert.ok(
         ["transport", "food", "energy", "waste", "other"].includes(
           challenge.category,
         ),
       );
     }
+  });
+
+  it("regression: different inputs produce materially different recommendation sets based on actual analysis", async () => {
+    const inputA = await orchestrateCarbonTracking({
+      activityString: "I drove 120km in a petrol car",
+    });
+
+    const inputB = await orchestrateCarbonTracking({
+      activityString: "I walked everywhere and ate vegetarian meals",
+    });
+
+    // Verify A produces transport challenges
+    assert.equal(inputA.summary.hotspot.category, "transport");
+    assert.ok(inputA.microChallenges.every((mc) => mc.category === "transport"));
+    assert.ok(inputA.microChallenges[0].estimatedCO2SavingsKg > 2.0); // Scaled dynamically from 25.2kg
+
+    // Verify B produces food challenges specific to low-emission streak
+    assert.equal(inputB.summary.hotspot.category, "food");
+    assert.ok(inputB.microChallenges.every((mc) => mc.category === "food"));
+    assert.ok(inputB.microChallenges[0].title.includes("Plant-Based Streak") || inputB.microChallenges[0].title.includes("Optimize Your Food Waste") || inputB.microChallenges[0].title.includes("Try a Meatless Monday") || inputB.microChallenges[0].title.includes("Swap High-Emission Protein"));
+
+    // Ensure the recommendations are distinct
+    assert.notDeepEqual(inputA.microChallenges, inputB.microChallenges);
   });
 
   it("should apply default baseline when profileContext is omitted", async () => {

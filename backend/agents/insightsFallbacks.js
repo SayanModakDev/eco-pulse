@@ -2,81 +2,133 @@
  * @fileoverview Default fallback challenges and summary insights
  * used when the LLM insights agent is unavailable.
  */
-export const defaultChallenges = {
-  food: [
-    {
-      title: "Try a Meatless Monday",
-      description:
-        "Based on your recent beef consumption, substitute with lentils or a plant-based option in your next meal for major savings.",
-      estimatedCO2SavingsKg: 4.8,
-      difficulty: "easy",
-      category: "food",
-    },
-    {
-      title: "Swap Beef for Chicken",
-      description:
-        "Transition your main protein from beef to poultry for your next meal. Chicken has a carbon footprint nearly 4x smaller than beef per serving.",
-      estimatedCO2SavingsKg: 3.5,
-      difficulty: "easy",
-      category: "food",
-    },
-  ],
-  transport: [
-    {
-      title: "Go Car-Free This Trip",
-      description:
-        "For your next journey under 5km, leave the car key behind and choose to walk, cycle, or use public transport. You'll save emissions and gain exercise.",
-      estimatedCO2SavingsKg: 1.8,
-      difficulty: "medium",
-      category: "transport",
-    },
-    {
-      title: "Combine Your Car Trips",
-      description:
-        "Plan ahead and consolidate multiple short errands into a single trip. Cold engine starts produce disproportionately high emissions.",
-      estimatedCO2SavingsKg: 0.9,
-      difficulty: "easy",
-      category: "transport",
-    },
-  ],
-  energy: [
-    {
-      title: "Hunt Your Standby Power",
-      description:
-        "Walk around your home and unplug 3 vampire electronics (TV boxes, microwave displays, chargers) that consume energy even when idle.",
-      estimatedCO2SavingsKg: 0.6,
-      difficulty: "easy",
-      category: "energy",
-    },
-    {
-      title: "Shift Your Thermostat 1°",
-      description:
-        "Set your AC 1 degree higher or heater 1 degree lower today. This small shift can save a significant chunk of HVAC energy over the day.",
-      estimatedCO2SavingsKg: 1.2,
-      difficulty: "easy",
-      category: "energy",
-    },
-  ],
-  waste: [
-    {
-      title: "Go Zero-Waste at Meals",
-      description:
-        "Avoid all single-use plastics and packaging for your meals today. Pack food in reusable containers and carry a reusable water bottle.",
-      estimatedCO2SavingsKg: 0.4,
-      difficulty: "medium",
-      category: "waste",
-    },
-  ],
-  other: [
+
+export const generateFallbackChallenges = (hotspot, rawInput) => {
+  const category = hotspot?.category || "other";
+  const desc = hotspot?.description || "activity";
+  const co2e = hotspot?.co2eKg || 0;
+  
+  // Calculate realistic savings based on actual emissions
+  const primarySavings = parseFloat((co2e * 0.3).toFixed(2)) || 1.5;
+  const secondarySavings = parseFloat((co2e * 0.15).toFixed(2)) || 0.8;
+
+  // Determine tone based on severity
+  const isLowEmission = co2e < 2.0;
+
+  if (category === "food") {
+    if (isLowEmission) {
+      return [
+        {
+          title: "Sustain Your Plant-Based Streak",
+          description: `Your recent food choice (${desc}) was already low-emission! Challenge yourself to keep your next two meals completely plant-based.`,
+          estimatedCO2SavingsKg: primarySavings,
+          difficulty: "medium",
+          category: "food",
+        },
+        {
+          title: "Optimize Your Food Waste",
+          description: "Since your diet is already carbon-efficient, ensure none of it goes to waste. Plan your portions strictly for your next meal.",
+          estimatedCO2SavingsKg: secondarySavings,
+          difficulty: "easy",
+          category: "food",
+        }
+      ];
+    }
+    return [
+      {
+        title: "Swap High-Emission Protein",
+        description: `Your ${desc} contributed heavily to your footprint. Substitute with lentils or a plant-based option in your next meal for major savings.`,
+        estimatedCO2SavingsKg: primarySavings,
+        difficulty: "easy",
+        category: "food",
+      },
+      {
+        title: "Try a Meatless Monday",
+        description: "Commit to making one full day a week entirely meat-free to offset the emissions from this meal.",
+        estimatedCO2SavingsKg: secondarySavings,
+        difficulty: "medium",
+        category: "food",
+      },
+    ];
+  }
+
+  if (category === "transport") {
+    if (isLowEmission) {
+      return [
+        {
+          title: "Keep Up the Active Transit",
+          description: `Your choice of ${desc} is excellent. Can you recruit a friend or family member to join you on your next active commute?`,
+          estimatedCO2SavingsKg: primarySavings,
+          difficulty: "easy",
+          category: "transport",
+        },
+        {
+          title: "Share Your Low-Carbon Route",
+          description: "Log or share the zero-emission route you just took to encourage others to avoid driving that segment.",
+          estimatedCO2SavingsKg: secondarySavings,
+          difficulty: "easy",
+          category: "transport",
+        }
+      ];
+    }
+    return [
+      {
+        title: "Go Car-Free This Trip",
+        description: `Your ${desc} was your biggest emission source. For your next journey under 5km, leave the car key behind and choose to walk, cycle, or use public transport.`,
+        estimatedCO2SavingsKg: primarySavings,
+        difficulty: "medium",
+        category: "transport",
+      },
+      {
+        title: "Combine Your Car Trips",
+        description: "Plan ahead and consolidate multiple short errands into a single trip. Cold engine starts produce disproportionately high emissions.",
+        estimatedCO2SavingsKg: secondarySavings,
+        difficulty: "easy",
+        category: "transport",
+      },
+    ];
+  }
+
+  if (category === "energy") {
+    return [
+      {
+        title: "Hunt Your Standby Power",
+        description: `Your ${desc} signals high energy usage. Walk around your home and unplug 3 vampire electronics that consume energy even when idle.`,
+        estimatedCO2SavingsKg: primarySavings,
+        difficulty: "easy",
+        category: "energy",
+      },
+      {
+        title: "Shift Your Thermostat 1°",
+        description: "Set your AC 1 degree higher or heater 1 degree lower today. This small shift can save a significant chunk of HVAC energy.",
+        estimatedCO2SavingsKg: secondarySavings,
+        difficulty: "easy",
+        category: "energy",
+      },
+    ];
+  }
+
+  if (category === "waste") {
+    return [
+      {
+        title: "Go Zero-Waste at Meals",
+        description: `Your ${desc} added to landfill mass. Avoid all single-use plastics and packaging for your meals today.`,
+        estimatedCO2SavingsKg: primarySavings,
+        difficulty: "medium",
+        category: "waste",
+      },
+    ];
+  }
+
+  return [
     {
       title: "Do a Digital Clean-Up",
-      description:
-        "Delete 100 old emails and clear files from your cloud storage trash to reduce remote data center server load and energy use.",
-      estimatedCO2SavingsKg: 0.1,
+      description: `Reflecting on your ${desc}, consider reducing your remote data footprint by deleting 100 old emails.`,
+      estimatedCO2SavingsKg: primarySavings,
       difficulty: "easy",
       category: "other",
     },
-  ],
+  ];
 };
 
 export const defaultSummaryInsights = {
