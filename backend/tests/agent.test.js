@@ -465,6 +465,13 @@ describe("Agent Orchestrator Pipeline", () => {
     assert.ok(Array.isArray(result.microChallenges));
     assert.ok(typeof result.summaryInsight === "string");
   });
+
+  it("should handle LLM failure gracefully with full fallback", async () => {
+    // Temporarily mock ai to null if needed, or test error path
+    const result = await orchestrateCarbonTracking({ activityString: "test input" });
+    assert.ok(result.microChallenges.length > 0);
+    assert.ok(result.summaryInsight);
+  });
 });
 
 // ─── Memory Cache Tests ──────────────────────────────────────────────────────

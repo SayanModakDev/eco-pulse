@@ -31,7 +31,17 @@ const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || "development";
 
 // 1. Security Headers
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"], // Tailwind
+      imgSrc: ["'self'", "data:"],
+    },
+  },
+  hsts: { maxAge: 31536000, includeSubDomains: true },
+}));
 
 // 2. CORS
 const allowedOrigins = process.env.ALLOWED_ORIGINS

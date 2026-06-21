@@ -15,6 +15,7 @@ import {
   defaultSummaryInsights,
 } from "./insightsFallbacks.js";
 import { EMISSION_FACTORS } from "../utils/constants.js";
+import { sanitizeInput } from "../utils/validators.js";
 
 /**
  * @fileoverview Multi-Agent Orchestration Layer
@@ -284,13 +285,14 @@ export async function orchestrateCarbonTracking({
   profileContext,
 }) {
   const baseline = profileContext?.dailyBaselineKg || 15.0;
-  const cacheKey = `track::${activityString}::${baseline}`;
+  const sanitizedActivity = sanitizeInput(activityString).slice(0, 2000);
+  const cacheKey = `track::${sanitizedActivity.substring(0, 100)}::${baseline}`;
   const cachedResult = resultCache.get(cacheKey);
   if (cachedResult) {
     return cachedResult;
   }
 
-  const extractedActivities = await runExtractionAgent(activityString);
+  const extractedActivities = await runExtractionAgent(sanitizedActivity);
   const calculations = runCalculationAgent(
     extractedActivities,
     profileContext || {},

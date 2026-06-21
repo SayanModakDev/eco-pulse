@@ -54,7 +54,7 @@ export default function DashboardPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            activityString,
+            activityString: activityString.trim(),
             profileContext: {
               dailyBaselineKg: dailyTarget,
             },
@@ -62,10 +62,11 @@ export default function DashboardPage() {
         });
 
         if (!response.ok) {
-          throw new Error("API request failed");
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "API request failed");
         }
 
-        const result = await response.json();
+        const result: { success: boolean; data: TrackingData } = await response.json();
 
         if (result.success && result.data) {
           setData(result.data);
