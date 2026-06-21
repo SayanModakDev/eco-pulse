@@ -9,46 +9,46 @@
  * Order matters: first match wins.
  * @type {Record<string, Array<{keywords: string[], factor: string}>>}
  */
-const CATEGORY_KEYWORD_MAP = {
-  transport: [
-    { keywords: ["bike", "bicycle", "walk", "cycle"], factor: "bike" },
-    { keywords: ["bus"], factor: "bus" },
-    { keywords: ["train", "metro", "subway"], factor: "train" },
-    { keywords: ["flight", "fly", "flew", "plane"], factor: "flight" },
-    { keywords: ["motorbike", "motorcycle"], factor: "motorbike" },
-    { keywords: ["scooter"], factor: "scooter" },
-    { keywords: ["taxi", "cab", "uber", "lyft", "ride-hail"], factor: "taxi" },
-    {
-      keywords: ["car", "drive", "driving", "drove", "vehicle"],
+const CATEGORY_KEYWORD_MAP = Object.freeze({
+  transport: Object.freeze([
+    Object.freeze({ keywords: Object.freeze(["bike", "bicycle", "walk", "cycle"]), factor: "bike" }),
+    Object.freeze({ keywords: Object.freeze(["bus"]), factor: "bus" }),
+    Object.freeze({ keywords: Object.freeze(["train", "metro", "subway"]), factor: "train" }),
+    Object.freeze({ keywords: Object.freeze(["flight", "fly", "flew", "plane"]), factor: "flight" }),
+    Object.freeze({ keywords: Object.freeze(["motorbike", "motorcycle"]), factor: "motorbike" }),
+    Object.freeze({ keywords: Object.freeze(["scooter"]), factor: "scooter" }),
+    Object.freeze({ keywords: Object.freeze(["taxi", "cab", "uber", "lyft", "ride-hail"]), factor: "taxi" }),
+    Object.freeze({
+      keywords: Object.freeze(["car", "drive", "driving", "drove", "vehicle"]),
       factor: "car",
-    },
-  ],
-  food: [
-    { keywords: ["beef", "burger", "steak"], factor: "beef" },
-    { keywords: ["lamb"], factor: "beef" },
-    { keywords: ["chicken", "poultry"], factor: "chicken" },
-    { keywords: ["pork"], factor: "pork" },
-    { keywords: ["fish", "seafood"], factor: "fish" },
-    { keywords: ["cheese"], factor: "cheese" },
-    { keywords: ["milk", "dairy"], factor: "milk" },
-    { keywords: ["rice"], factor: "rice" },
-    { keywords: ["pasta"], factor: "pasta" },
-    {
-      keywords: ["salad", "vegetable", "vegan", "vegetarian"],
+    }),
+  ]),
+  food: Object.freeze([
+    Object.freeze({ keywords: Object.freeze(["beef", "burger", "steak"]), factor: "beef" }),
+    Object.freeze({ keywords: Object.freeze(["lamb"]), factor: "beef" }),
+    Object.freeze({ keywords: Object.freeze(["chicken", "poultry"]), factor: "chicken" }),
+    Object.freeze({ keywords: Object.freeze(["pork"]), factor: "pork" }),
+    Object.freeze({ keywords: Object.freeze(["fish", "seafood"]), factor: "fish" }),
+    Object.freeze({ keywords: Object.freeze(["cheese"]), factor: "cheese" }),
+    Object.freeze({ keywords: Object.freeze(["milk", "dairy"]), factor: "milk" }),
+    Object.freeze({ keywords: Object.freeze(["rice"]), factor: "rice" }),
+    Object.freeze({ keywords: Object.freeze(["pasta"]), factor: "pasta" }),
+    Object.freeze({
+      keywords: Object.freeze(["salad", "vegetable", "vegan", "vegetarian"]),
       factor: "vegetable",
-    },
-  ],
-  energy: [
-    { keywords: ["electricity", "kwh"], factor: "electricity" },
-    { keywords: ["gas"], factor: "gas" },
-    { keywords: ["heating"], factor: "heating" },
-  ],
-  waste: [
-    { keywords: ["recycle", "recycling"], factor: "recycle" },
-    { keywords: ["compost"], factor: "compost" },
-    { keywords: ["landfill", "trash", "garbage"], factor: "landfill" },
-  ],
-};
+    }),
+  ]),
+  energy: Object.freeze([
+    Object.freeze({ keywords: Object.freeze(["electricity", "kwh"]), factor: "electricity" }),
+    Object.freeze({ keywords: Object.freeze(["gas"]), factor: "gas" }),
+    Object.freeze({ keywords: Object.freeze(["heating"]), factor: "heating" }),
+  ]),
+  waste: Object.freeze([
+    Object.freeze({ keywords: Object.freeze(["recycle", "recycling"]), factor: "recycle" }),
+    Object.freeze({ keywords: Object.freeze(["compost"]), factor: "compost" }),
+    Object.freeze({ keywords: Object.freeze(["landfill", "trash", "garbage"]), factor: "landfill" }),
+  ]),
+});
 
 /**
  * Determines the correct emission factor for a specific activity description

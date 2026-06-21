@@ -10,7 +10,7 @@ export const RATE_LIMIT_MAX_REQUESTS = 10000;
 
 // ── Fallback Extraction Keywords ─────────────────────────────────────────
 
-export const TRANSPORT_KEYWORDS = [
+export const TRANSPORT_KEYWORDS = Object.freeze([
   "km",
   "mile",
   "miles",
@@ -37,7 +37,7 @@ export const TRANSPORT_KEYWORDS = [
   "uber",
   "lyft",
   "ride",
-];
+]);
 
 export const ZERO_EMISSION_TRANSPORT = new Set([
   "bike",
@@ -60,7 +60,7 @@ export const PUBLIC_TRANSPORT = new Set(["bus", "train", "metro", "subway"]);
 export const SCOOTER_TRANSPORT = new Set(["scooter"]);
 export const TAXI_TRANSPORT = new Set(["taxi", "cab", "uber", "lyft", "ride"]);
 
-export const FOOD_KEYWORDS = [
+export const FOOD_KEYWORDS = Object.freeze([
   "burger",
   "beef",
   "steak",
@@ -83,9 +83,9 @@ export const FOOD_KEYWORDS = [
   "eat",
   "ate",
   "meal",
-];
+]);
 
-export const ENERGY_KEYWORDS = [
+export const ENERGY_KEYWORDS = Object.freeze([
   "kwh",
   "electricity",
   "power",
@@ -94,9 +94,9 @@ export const ENERGY_KEYWORDS = [
   "solar",
   "ac",
   "aircon",
-];
+]);
 
-export const WASTE_KEYWORDS = [
+export const WASTE_KEYWORDS = Object.freeze([
   "landfill",
   "trash",
   "garbage",
@@ -108,12 +108,12 @@ export const WASTE_KEYWORDS = [
   "threw",
   "dispose",
   "bin",
-];
+]);
 
 // ── Emission Factors ──────────────────────────────────────────────────────
 
-export const EMISSION_FACTORS = {
-  transport: {
+export const EMISSION_FACTORS = Object.freeze({
+  transport: Object.freeze({
     car: 0.21, // per km
     drive: 0.21,
     driving: 0.21,
@@ -133,8 +133,8 @@ export const EMISSION_FACTORS = {
     walk: 0.0,
     walking: 0.0,
     default: 0.18, // slightly higher default to account for mixed/unknown vehicle types
-  },
-  food: {
+  }),
+  food: Object.freeze({
     beef: 6.0, // per serving or unit
     burger: 5.5,
     hamburger: 5.5,
@@ -155,15 +155,15 @@ export const EMISSION_FACTORS = {
     vegan: 0.2,
     vegetarian: 0.3,
     default: 1.4, // slightly lower default reflecting mixed-diet average
-  },
-  energy: {
+  }),
+  energy: Object.freeze({
     electricity: 0.45, // per kWh
     kwh: 0.45,
     gas: 0.2,
     heating: 0.25,
     default: 0.35,
-  },
-  waste: {
+  }),
+  waste: Object.freeze({
     landfill: 0.5, // per kg
     trash: 0.5,
     garbage: 0.5,
@@ -171,8 +171,8 @@ export const EMISSION_FACTORS = {
     recycling: 0.1,
     compost: 0.05,
     default: 0.3,
-  },
-  other: {
+  }),
+  other: Object.freeze({
     default: 0.5,
-  },
-};
+  }),
+});
