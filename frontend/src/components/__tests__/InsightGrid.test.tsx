@@ -5,16 +5,26 @@ const mockChallenges = [
   {
     title: "Test Challenge 1",
     description: "Test Description 1",
-    potentialSavingKg: 5,
+    estimatedCO2SavingsKg: 5,
     difficulty: "easy" as const,
     category: "transport" as const,
+    projections: {
+      weekly: 35,
+      monthly: 150,
+      annual: 1825,
+    },
   },
   {
     title: "Test Challenge 2",
     description: "Test Description 2",
-    potentialSavingKg: 10,
+    estimatedCO2SavingsKg: 10,
     difficulty: "medium" as const,
     category: "food" as const,
+    projections: {
+      weekly: 70,
+      monthly: 300,
+      annual: 3650,
+    },
   },
 ];
 

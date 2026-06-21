@@ -183,20 +183,26 @@ const microChallengeSchema = z.object({
 
 const summarySchema = z.object({
   totalCo2eKg: z.number(),
-  baselineKg: z.number(),
+  dailyBaselineKg: z.number(),
   differenceKg: z.number(),
+  percentageDifference: z.number(),
   status: z.enum(["under_baseline", "over_baseline", "at_baseline"]),
-  hotspotCategory: z.string(),
-  summaryInsight: z.string(),
+  hotspot: activitySchema.nullable().optional(),
 });
 
 export const trackResponseSchema = z.object({
   success: z.boolean(),
   message: z.string(),
   data: z.object({
+    rawInput: z.string().optional(),
+    profileApplied: z.object({
+      userId: z.string(),
+      email: z.string(),
+      timezone: z.string(),
+    }).optional(),
     activities: z.array(activitySchema),
     microChallenges: z.array(microChallengeSchema),
     summary: summarySchema,
-    profileContextApplied: z.boolean(),
+    summaryInsight: z.string(),
   }),
 });

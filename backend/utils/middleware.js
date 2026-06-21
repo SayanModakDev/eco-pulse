@@ -26,10 +26,7 @@ export const validateRequestBody = (schema) => {
 export const sendValidatedResponse = (req, res, schema, payload, statusCode = 200) => {
   const result = schema.safeParse(payload);
   if (!result.success) {
-    const NODE_ENV = process.env.NODE_ENV || "development";
-    if (NODE_ENV === "development") {
-      console.error(`[Error] [${req.requestId}] Response validation failed:`, result.error);
-    }
+    console.error(`[Error] [${req.requestId}] Response validation failed:`, result.error);
     return res.status(500).json({
       status: "error",
       message: "Internal Server Error: API contract violation",

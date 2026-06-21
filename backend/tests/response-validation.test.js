@@ -2,8 +2,6 @@ import test from "node:test";
 import assert from "node:assert";
 import {
   healthResponseSchema,
-  queryResponseSchema,
-  profileResponseSchema,
   trackResponseSchema,
 } from "../utils/validators.js";
 import { sendValidatedResponse } from "../utils/middleware.js";
@@ -64,13 +62,20 @@ test("API Response Schema Validations", async (t) => {
         ],
         summary: {
           totalCo2eKg: 5.5,
-          baselineKg: 15,
+          dailyBaselineKg: 15,
           differenceKg: -9.5,
+          percentageDifference: -63.3,
           status: "under_baseline",
-          hotspotCategory: "food",
-          summaryInsight: "Good job",
+          hotspot: {
+            category: "food",
+            description: "Ate a burger",
+            value: 1,
+            unit: "meal",
+            co2eKg: 5.5,
+            emissionFactorUsed: 5.5,
+          },
         },
-        profileContextApplied: false,
+        summaryInsight: "Good job",
       },
     };
 

@@ -320,8 +320,23 @@ components:
             - activities
             - microChallenges
             - summary
-            - profileContextApplied
+            - summaryInsight
           properties:
+            rawInput:
+              type: string
+            profileApplied:
+              type: object
+              required:
+                - userId
+                - email
+                - timezone
+              properties:
+                userId:
+                  type: string
+                email:
+                  type: string
+                timezone:
+                  type: string
             activities:
               type: array
               items:
@@ -389,27 +404,26 @@ components:
               type: object
               required:
                 - totalCo2eKg
-                - baselineKg
+                - dailyBaselineKg
                 - differenceKg
+                - percentageDifference
                 - status
-                - hotspotCategory
-                - summaryInsight
               properties:
                 totalCo2eKg:
                   type: number
-                baselineKg:
+                dailyBaselineKg:
                   type: number
                 differenceKg:
+                  type: number
+                percentageDifference:
                   type: number
                 status:
                   type: string
                   enum: [under_baseline, over_baseline, at_baseline]
-                hotspotCategory:
-                  type: string
-                summaryInsight:
-                  type: string
-            profileContextApplied:
-              type: boolean
+                hotspot:
+                  type: object
+            summaryInsight:
+              type: string
 
     ErrorResponse:
       type: object
