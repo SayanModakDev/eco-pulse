@@ -56,8 +56,6 @@ export default function DashboardPage() {
           body: JSON.stringify({
             activityString,
             profileContext: {
-              userId: "user_active_dashboard",
-              email: "eco-tracker@example.com",
               dailyBaselineKg: dailyTarget,
             },
           }),
@@ -143,7 +141,6 @@ export default function DashboardPage() {
               <h1 className="text-2xl font-extrabold tracking-tight text-white">
                 Eco-Pulse
               </h1>
-              <span className="sr-only">Accessibility Optimized Dashboard</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -333,7 +330,7 @@ export default function DashboardPage() {
             © {new Date().getFullYear()} Eco-Pulse Carbon Mitigation Dashboard.
           </p>
           <p className="mt-1">
-            Built using Next.js & Tailwind CSS. Certified accessibility layout.
+            Built using Next.js & Tailwind CSS, following WCAG AA accessibility practices.
           </p>
         </div>
       </footer>

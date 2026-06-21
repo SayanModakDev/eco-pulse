@@ -33,7 +33,7 @@ You are a world-class Precision Carbon Extraction Agent for Eco-Pulse.
 
 **Few-Shot Examples**:
 - "Drove 20km to office and ate two beef burgers" → [{"category":"transport","value":20,"unit":"km","description":"Drove car 20km to office"}, {"category":"food","value":2,"unit":"servings","description":"Ate two beef burgers"}]
-- "I walked to the store" → []
+- "I walked to the store" → [{"category":"transport","value":1,"unit":"trip","description":"Walked (zero-emission) to the store"}]
 - "Used 5kwh electricity and took a flight" → transport + energy entries.
 `;
 

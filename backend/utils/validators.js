@@ -37,20 +37,19 @@ export const naturalLanguageInputSchema = z.object({
  */
 export const profileContextSchema = z.object({
   userId: z
-    .string({
-      required_error: "userId is required",
-    })
+    .string()
     .trim()
     .min(1, { message: "userId cannot be empty" })
-    .max(64, { message: "userId must be under 64 characters" }),
+    .max(64, { message: "userId must be under 64 characters" })
+    .default("anonymous")
+    .optional(),
 
   email: z
-    .string({
-      required_error: "Email is required",
-    })
+    .string()
     .trim()
     .max(254, { message: "Email exceeds maximum RFC 5321 length" })
-    .email({ message: "Invalid email address" }),
+    .email({ message: "Invalid email address" })
+    .optional(),
 
   displayName: z
     .string()
@@ -106,7 +105,7 @@ export const trackRequestSchema = z.object({
     })
     .trim()
     .min(1, { message: "activityString cannot be empty" })
-    .max(1000, { message: "activityString is too long (max 1000 characters)" }),
+    .max(2000, { message: "activityString is too long (max 2000 characters)" }),
 
   profileContext: profileContextSchema.optional(),
 });

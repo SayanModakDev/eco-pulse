@@ -115,9 +115,9 @@ describe("Zod Schema Validations", () => {
       );
     });
 
-    it("should reject an activityString exceeding 1000 characters", () => {
+    it("should reject an activityString exceeding 2000 characters", () => {
       assert.throws(
-        () => trackRequestSchema.parse({ activityString: "x".repeat(1001) }),
+        () => trackRequestSchema.parse({ activityString: "x".repeat(2001) }),
         (err) => {
           assert.ok(err.issues.some((i) => i.message.includes("too long")));
           return true;

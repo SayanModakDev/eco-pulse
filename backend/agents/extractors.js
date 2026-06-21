@@ -32,18 +32,23 @@ export function isKeywordNear(text, keyword, index) {
   return text.substring(start, end).includes(keyword);
 }
 
+const wordRegexCache = new Map();
+
+function getWordRegex(keyword) {
+  let regex = wordRegexCache.get(keyword);
+  if (!regex) {
+    regex = new RegExp(`\\b${keyword.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\b`);
+    wordRegexCache.set(keyword, regex);
+  }
+  return regex;
+}
+
 export function textHasWord(text, keyword) {
-  const regex = new RegExp(
-    `\\b${keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
-  );
-  return regex.test(text);
+  return getWordRegex(keyword).test(text);
 }
 
 export function findWordIndex(text, keyword) {
-  const regex = new RegExp(
-    `\\b${keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
-  );
-  const m = regex.exec(text);
+  const m = getWordRegex(keyword).exec(text);
   return m ? m.index : -1;
 }
 
