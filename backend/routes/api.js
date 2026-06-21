@@ -1,6 +1,6 @@
 import express from "express";
 import { validateRequestBody } from "../utils/middleware.js";
-import { trackRequestSchema } from "../utils/validators.js";
+import { trackRequestSchema, sanitizeInput } from "../utils/validators.js";
 import { orchestrateCarbonTracking } from "../agents/orchestrator.js";
 import { logRequestToGCP } from "../utils/gcp.js";
 
@@ -24,7 +24,11 @@ router.post(
       });
 
       // Non-blocking logging to GCP
-      logRequestToGCP(activityString, result, profileContext);
+      logRequestToGCP(
+        sanitizeInput(activityString).slice(0, 200),
+        result,
+        profileContext
+      );
 
       res.status(200).json({
         success: true,

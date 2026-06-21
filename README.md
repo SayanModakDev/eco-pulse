@@ -76,6 +76,7 @@ Each layer has a single responsibility: `server.js` composes middleware, `api.js
 | Rate Limiting | `express-rate-limit` — 10,000 requests per 15 minutes per IP | Prevents brute-force abuse and DDoS saturation |
 | Body Limits | `express.json({ limit: '10kb' })` | Blocks oversized payload attacks |
 | Input Validation | `zod` schemas on every inbound request | Rejects malformed, missing, or out-of-range data before processing |
+| Log Sanitization | Truncation + Stripping via `sanitizeInput` | Prevents GCP log injection attacks and payload abuse |
 | Secrets | `process.env` exclusively | Zero hardcoded credentials; all API keys are environment-sourced |
 
 ### Efficiency — Lightweight Runtime Footprint

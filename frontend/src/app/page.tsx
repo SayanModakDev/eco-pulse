@@ -66,7 +66,7 @@ export default function DashboardPage() {
           throw new Error(errorData.message || "API request failed");
         }
 
-        const result: { success: boolean; data: TrackingData } =
+        const result: { success: boolean; data: TrackingData; message?: string } =
           await response.json();
 
         if (result.success && result.data) {
@@ -95,7 +95,7 @@ export default function DashboardPage() {
             `Analysis complete. Your activity emitted ${totalCO2} kilograms of CO2, which ${statusMsg} Challenges generated.`,
           );
         } else {
-          throw new Error("Malformed response from backend");
+          throw new Error(result.message || "Malformed response from backend");
         }
       } catch (err) {
         setAnnouncement(

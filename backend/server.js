@@ -21,14 +21,19 @@ dotenv.config();
  * @fileoverview Main Express entry point for the Eco-Pulse API.
  * Manages middleware composition, rate limiting, and route mapping.
  */
-
-const app = express();
-
-// Trust reverse proxy (e.g. Cloud Run, Load Balancer)
-app.set("trust proxy", 1);
-
 const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || "development";
+
+const log = {
+  // eslint-disable-next-line no-console
+  info: (msg) => NODE_ENV === "development" && console.log(msg),
+  // eslint-disable-next-line no-console
+  error: (msg, err) => NODE_ENV === "development" && console.error(msg, err),
+};
+
+const app = express();
+// Trust reverse proxy (e.g. Cloud Run, Load Balancer)
+app.set("trust proxy", 1);
 
 // 1. Security Headers
 app.use(
@@ -188,8 +193,7 @@ app.use((err, req, res, next) => {
     });
   }
 
-  // eslint-disable-next-line no-console
-  console.error(`[Error] [${new Date().toISOString()}]:`, err);
+  log.error(`[Error] [${new Date().toISOString()}]:`, err);
 
   res.status(err.status || 500).json({
     status: "error",
@@ -200,14 +204,12 @@ app.use((err, req, res, next) => {
 
 // Start the server
 const server = app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Server running in ${NODE_ENV} mode on port ${PORT}`);
+  log.info(`Server running in ${NODE_ENV} mode on port ${PORT}`);
 });
 
 // 7. Graceful Shutdown
 const gracefulShutdown = (signal) => {
-  // eslint-disable-next-line no-console
-  console.log(`Received ${signal}. Shutting down gracefully...`);
+  log.info(`Received ${signal}. Shutting down gracefully...`);
   server.close(() => {
     process.exit(0);
   });
