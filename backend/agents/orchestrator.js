@@ -16,6 +16,7 @@ import {
 } from "./insightsFallbacks.js";
 import { EMISSION_FACTORS } from "../utils/constants.js";
 import { sanitizePromptInput } from "../utils/validators.js";
+import { logger } from "../utils/logger.js";
 
 /**
  * @fileoverview Multi-Agent Orchestration Layer
@@ -26,12 +27,7 @@ import { sanitizePromptInput } from "../utils/validators.js";
 /**
  * Centralized dev-only logger. Keeps no-console rule clean and scoped.
  */
-
-const isDev = process.env.NODE_ENV === "development";
-const log = {
-  info: (msg) => isDev && console.log(msg),
-  error: (msg) => isDev && console.error(msg),
-};
+// Replaced by external logger.js
 
 /** Initialize the Google Gen AI client if API key is available. */
 const ai = process.env.GEMINI_API_KEY
@@ -116,7 +112,7 @@ async function runExtractionAgent(activityString) {
   const safeActivity = sanitizePromptInput(activityString);
   if (ai) {
     try {
-      log.info("[Agent 1] LLM Extraction...");
+      logger.info("[Agent 1] LLM Extraction...");
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: `Extract activities from: "${safeActivity}"`,
@@ -133,7 +129,7 @@ async function runExtractionAgent(activityString) {
         return Array.isArray(parsed.activities) ? parsed.activities : [];
       }
     } catch (err) {
-      log.error(`[Agent 1] LLM failed: ${err.message}`);
+      logger.error(`[Agent 1] LLM failed: ${err.message}`);
     }
   }
 
@@ -273,7 +269,7 @@ async function runInsightsAgent(calculationResults) {
         }
       }
     } catch (err) {
-      log.error(`[Agent 3] LLM failed: ${err.message}`);
+      logger.error(`[Agent 3] LLM failed: ${err.message}`);
     }
   }
 

@@ -1,3 +1,5 @@
+import { logger } from "./logger.js";
+
 /**
  * Creates an Express middleware for validating the request body against a Zod schema.
  * @param {import('zod').ZodSchema} schema - The Zod schema to validate against.
@@ -26,7 +28,7 @@ export const validateRequestBody = (schema) => {
 export const sendValidatedResponse = (req, res, schema, payload, statusCode = 200) => {
   const result = schema.safeParse(payload);
   if (!result.success) {
-    console.error(`[Error] [${req.requestId}] Response validation failed:`, result.error);
+    logger.error(`[Error] [${req.requestId}] Response validation failed: ${result.error}`);
     return res.status(500).json({
       status: "error",
       message: "Internal Server Error: API contract violation",

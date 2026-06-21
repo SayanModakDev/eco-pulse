@@ -18,6 +18,7 @@ import {
   RATE_LIMIT_MAX_REQUESTS,
 } from "./utils/constants.js";
 import apiRouter from "./routes/api.js";
+import { logger } from "./utils/logger.js";
 
 // Load environment variables
 dotenv.config();
@@ -29,10 +30,7 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || "development";
 
-const log = {
-  info: (msg) => NODE_ENV === "development" && console.log(msg),
-  error: (msg, err) => NODE_ENV === "development" && console.error(msg, err),
-};
+// Replaced by external logger
 
 const app = express();
 // Trust reverse proxy (e.g. Cloud Run, Load Balancer)
@@ -213,7 +211,7 @@ app.use((err, req, res, next) => {
     });
   }
 
-  log.error(`[Error] [${req.requestId}] [${new Date().toISOString()}]:`, err);
+  logger.error(`[Error] [${req.requestId}] [${new Date().toISOString()}]:`, err);
 
   res.status(err.status || 500).json({
     status: "error",
@@ -225,12 +223,12 @@ app.use((err, req, res, next) => {
 
 // Start the server
 const server = app.listen(PORT, () => {
-  log.info(`Server running in ${NODE_ENV} mode on port ${PORT}`);
+  logger.info(`Server running in ${NODE_ENV} mode on port ${PORT}`);
 });
 
 // 8. Graceful Shutdown
 const gracefulShutdown = (signal) => {
-  log.info(`Received ${signal}. Shutting down gracefully...`);
+  logger.info(`Received ${signal}. Shutting down gracefully...`);
   server.close(() => {
     process.exit(0);
   });
