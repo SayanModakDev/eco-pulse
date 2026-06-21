@@ -35,7 +35,7 @@ backend/
 ├── server.js                    # Express entry — middleware composition only
 ├── routes/api.js                # Route handlers — validation + orchestrator invocation
 ├── agents/
-│   ├── orchestrator.js          # Multi-agent pipeline coordination (~182 lines with full JSDoc)
+│   ├── orchestrator.js          # Multi-agent pipeline coordination (full JSDoc)
 │   ├── extractors.js            # Modular keyword extraction helpers
 │   ├── calculationHelpers.js    # Declarative emission factor lookup + CO2e math
 │   ├── insightsFallbacks.js     # Default challenges & insights (LLM fallback data)
@@ -87,7 +87,7 @@ Each layer has a single responsibility: `server.js` composes middleware, `api.js
 | `naturalLanguageInputSchema` | 7 | Empty strings, oversized queries, type coercion, locale regex, whitespace trimming |
 | `trackRequestSchema` | 6 | Missing fields, length overflow, whitespace-only inputs, XSS character pass-through |
 | `profileContextSchema` | 4 | Invalid emails, negative baselines, tag array limits, default preference injection |
-| `Agent Orchestrator Pipeline` | 16 | End-to-end flow, multi-category extraction, zero-emission activities, hotspot detection, decimal parsing, emoji handling |
+| `Agent Orchestrator Pipeline` | 17 | End-to-end flow, multi-category extraction, zero-emission activities, hotspot detection, decimal parsing, emoji handling |
 | `MemoryCache Utility` | 8 | TTL expiry, LRU eviction, CRUD operations, stats reporting |
 | `emissionFactorCache singleton` | 1 | Instance type and TTL configuration |
 | `Structured Output Schema Verification` | 8 | Full JSON schema compliance across 8 diverse scenarios |
@@ -104,7 +104,7 @@ npm test
 The frontend enforces strict accessibility standards throughout:
 
 - **Semantic HTML**: Every section uses appropriate landmark elements (`<header>`, `<main>`, `<section>`, `<article>`, `<aside>`, `<footer>`).
-- **ARIA Live Regions**: An invisible `aria-live="polite"` status element announces tracking results and error states to screen readers.
+- **ARIA Live Regions**: Includes an `aria-live="polite"` region for routine status updates and a dedicated `aria-live="assertive"` region to immediately announce error states.
 - **ARIA Labels**: All interactive elements carry explicit `aria-label`, `aria-describedby`, `aria-invalid`, and `aria-pressed` attributes.
 - **Keyboard Navigation**: Every button and form control is fully operable via keyboard with visible focus indicators.
 - **Color Contrast**: Dark-mode-first palette uses high-contrast text exceeding WCAG AA 4.5:1 ratio requirements.
