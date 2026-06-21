@@ -66,12 +66,20 @@ export default function DashboardPage() {
           throw new Error(errorData.message || "API request failed");
         }
 
-        const result: any = await response.json();
+        type ApiResponse = {
+          success?: boolean;
+          data?: TrackingData;
+          activities?: TrackingData["activities"];
+          summary?: TrackingData["summary"];
+          message?: string;
+        };
+        const result = (await response.json()) as ApiResponse;
 
         // Support both wrapped {success, data} and direct result (backend flexibility)
         const trackingData = result.success && result.data ? result.data : result;
 
-        if (trackingData.activities || trackingData.summary) {
+        if (trackingData.activities && trackingData.summary) {
+          const summary = trackingData.summary;
           setData(trackingData as TrackingData);
 
           // Add to local session history
@@ -82,16 +90,16 @@ export default function DashboardPage() {
                 hour: "2-digit",
                 minute: "2-digit",
               }),
-              co2eKg: trackingData.summary.totalCo2eKg,
+              co2eKg: summary.totalCo2eKg,
             },
             ...prev,
           ]);
 
-          const totalCO2 = trackingData.summary.totalCo2eKg;
+          const totalCO2 = summary.totalCo2eKg;
           const statusMsg =
-            trackingData.summary.status === "over_baseline"
-              ? `exceeds your daily target by ${trackingData.summary.differenceKg} kilograms.`
-              : `keeps you under your daily target by ${Math.abs(trackingData.summary.differenceKg)} kilograms.`;
+            summary.status === "over_baseline"
+              ? `exceeds your daily target by ${summary.differenceKg} kilograms.`
+              : `keeps you under your daily target by ${Math.abs(summary.differenceKg)} kilograms.`;
 
           setAnnouncement(
             `Analysis complete. Your activity emitted ${totalCO2} kilograms of CO2, which ${statusMsg} Challenges generated.`,

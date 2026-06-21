@@ -163,7 +163,6 @@ app.use("*", (req, res) => {
 });
 
 // 6. Global Error-Handling Middleware
-// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   if (err.name === "ZodError" || err.issues) {
     const fieldErrors = err.issues.map((issue) => ({

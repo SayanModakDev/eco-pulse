@@ -27,11 +27,10 @@ import { sanitizePromptInput } from "../utils/validators.js";
  * Centralized dev-only logger. Keeps no-console rule clean and scoped.
  */
 
+const isDev = process.env.NODE_ENV === "development";
 const log = {
-  // eslint-disable-next-line no-console
-  info: (msg) => process.env.NODE_ENV === "development" && console.log(msg),
-  // eslint-disable-next-line no-console
-  error: (msg) => process.env.NODE_ENV === "development" && console.error(msg),
+  info: (msg) => isDev && console.log(msg),
+  error: (msg) => isDev && console.error(msg),
 };
 
 /** Initialize the Google Gen AI client if API key is available. */

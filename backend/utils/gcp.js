@@ -12,19 +12,19 @@ let storage;
 try {
   firestore = new Firestore({ projectId });
 } catch (e) {
-  console.warn("Firestore initialization failed:", e.message); // eslint-disable-line no-console
+  console.warn("Firestore initialization failed:", e.message);
 }
 
 try {
   logging = new Logging({ projectId });
 } catch (e) {
-  console.warn("Cloud Logging initialization failed:", e.message); // eslint-disable-line no-console
+  console.warn("Cloud Logging initialization failed:", e.message);
 }
 
 try {
   storage = new Storage({ projectId });
 } catch (e) {
-  console.warn("Cloud Storage initialization failed:", e.message); // eslint-disable-line no-console
+  console.warn("Cloud Storage initialization failed:", e.message);
 }
 
 const BUCKET_NAME = process.env.GCS_BUCKET_NAME || `${projectId}-logs`;
@@ -90,7 +90,6 @@ export const logRequestToGCP = (query, responseData, metadata) => {
       } catch (err) {
         // If bucket does not exist, attempt to create it (only once) and retry
         if (err.code === 404) {
-          // eslint-disable-next-line no-console
           console.log(`Bucket ${BUCKET_NAME} not found. Creating...`);
           await bucket.create({ location: "US" });
           await file.save(content, {
@@ -106,7 +105,6 @@ export const logRequestToGCP = (query, responseData, metadata) => {
     results.forEach((result, index) => {
       if (result.status === "rejected") {
         const services = ["Firestore", "Cloud Logging", "Cloud Storage"];
-        // eslint-disable-next-line no-console
         console.error(`GCP Error [${services[index]}]:`, result.reason.message);
       }
     });
